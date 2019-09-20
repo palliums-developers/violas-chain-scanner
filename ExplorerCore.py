@@ -1,11 +1,23 @@
 from LibraClient import Client
+from DBHandler import DBHandler
 
-cli = Client()
+# dbh = DBHandler();
+cli = Client();
 
-param = {}
-param["startVersion"] = 1
-param["limit"] = 1
-param["fetchEvents"] = True
+while True:
+    nextID = 1;# dbh.GetNextID;
+    limit = 1000;
 
-# cli.get_account_states(["0fc36d52be67289088d77ee285a1edab560df207fbb7905f8fd37e23b943bafe "])
-cli.GetTransactions(param)
+    param = {};
+    param["startVersion"] = nextID;
+    param["limit"] = limit;
+    param["fetchEvents"] = True;
+
+    results = cli.GetTransactions(param);
+
+    print(results);
+    # dbh.InsertTransactionInfo(results);
+
+    # for result in results:
+    #     dbh.ProcessFromAddresses(result["from"], results["_id"]);
+    #     dbh.ProcessToAddresses(result["to"], results["_id"]);
