@@ -1,6 +1,6 @@
-from pymongo import MongoClient;
+from pymongo import MongoClient
 
-DB_URL = "mongodb://api.librachecker.com:27017";
+DB_URL = "mongodb://localhost:27017";
 
 class DBHandler:
     def __init__(self, url = DB_URL):
