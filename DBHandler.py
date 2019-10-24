@@ -1,3 +1,4 @@
+import pymongo
 from pymongo import MongoClient
 
 DB_URL = "mongodb://localhost:27017";
@@ -8,13 +9,13 @@ class DBHandler:
 
     def GetNextID(self):
         dbo = self.client.libra_local.transactions;
-        lastTx = dbo.find().sort({"_id":-1}).limit(1);
+        lastTx = dbo.find({}).sort("_id", pymongo.DESCENDING).limit(1);
         length = lastTx.count();
 
         if length == 0:
             return 1;
         else:
-            return lastTx[0]["_id"];
+            return lastTx[0]["_id"] + 1;
 
     def InsertTransactionInfo(self, txInfo):
         dbo = self.client.libra_local.transactions;
@@ -25,9 +26,9 @@ class DBHandler:
         addressInfo = dbo.find_one({"_id": address});
 
         if addressInfo != None:
-            result = dbo.update_one({"_id": address}, {"$addToSet": {"rececived": version}});
+            result = dbo.update_one({"_id": address}, {"$addToSet": {"received": version}});
         else:
-            result = dbo.insert_one({"_id": address});
+            result = dbo.insert_one({"_id": address, "received": [version]});
 
     def ProcessFromAddresses(self, address, version):
         dbo = self.client.libra_local.addresses;
@@ -36,4 +37,4 @@ class DBHandler:
         if addressInfo != None:
             result = dbo.update_one({"_id": address}, {"$addToSet": {"sent": version}});
         else:
-            result = dbo.insert_one({"_id": address});
+            result = dbo.insert_one({"_id": address, "sent": [version]});
