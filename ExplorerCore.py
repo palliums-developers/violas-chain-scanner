@@ -7,7 +7,7 @@ cli = Client("testnet");
 
 while True:
     nextID = dbh.GetNextID();
-    print(nextID);
+    # print(nextID);
     limit = 1;
 
     txInfos = cli.get_transactions(nextID, limit);
@@ -39,7 +39,7 @@ while True:
         sig = "".join(["{:02x}".format(i) for i in txInfo.signature]);
         data["signature"] = sig;
 
-        print(data);
+        # print(data);
 
         dbh.InsertTransactionInfo(data);
 
