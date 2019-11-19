@@ -1,47 +1,87 @@
-from DBHandler import DBHandler
+import logging
+import configparser
+
 from libra import Client
 from time import sleep
 
-dbh = DBHandler();
-cli = Client("testnet");
+from LibraPGHandler import LibraPGHandler
+
+config = configparser.ConfigParser()
+config.read("./config.ini")
+
+VIOLAS_HOST = "52.27.228.84"
+VIOLAS_PORT = 40001
+
+libraClient = Client("testnet");
+violasClient = Client.new(VIOLAS_HOST, VIOLAS_PORT, "../../documents/consensus_peers.config.toml")
+
+libraDBInfo = config["LIBRA DB INFO"]
+libraDBUrl = f"{libraDBInfo['DBTYPE']}+{libraDBInfo['DRIVER']}://{libraDBInfo['USERNAME']}:{libraDBInfo['PASSWORD']}@{libraDBInfo['HOSTNAME']}:{libraDBInfo['PORT']}/{libraDBInfo['DATABASE']}"
+HLibra = LibraPGHandler(libraDBUrl)
+
+violasDBInfo = config["VIOLAS DB INFO"]
+violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
 
 while True:
-    nextID = dbh.GetNextID();
-    # print(nextID);
-    limit = 1;
+    nextID = HLibra.GetTransactionCount()
+    logging.debug("Get next id is %d", nextID)
+    print(nextID)
+    limit = 100
 
-    txInfos = cli.get_transactions(nextID, limit);
+    txInfos = libraClient.get_transactions(nextID, limit, True)
     if len(txInfos) == 0:
-        sleep(1 / 1000 * 50);
-        continue;
+        sleep(1 / 1000 * 500)
+        continue
 
+    datas = []
     for txInfo in txInfos:
-        # print(txInfo);
+        logging.debug("Get transaction info {}", txInfo)
+        data = {}
+        data["version"] = txInfo.version
+        data["sequence_number"] = txInfo.raw_txn.sequence_number
+        data["expiration_time"] = txInfo.raw_txn.expiration_time
+        if txInfo.raw_txn.type.type == "write_set":
+            data["transaction_type"] = 0
+            data["sender"] = "0"
+            data["receiver"] = "0"
+            data["amount"] = 0
+            data["expiration_time"] = 0
+        else:
+            if txInfo.raw_txn.type.type == "mint":
+                data["transaction_type"] = 1
+            elif txInfo.raw_txn.type.type == "peer_to_peer_transfer":
+                data["transaction_type"] = 2
 
-        data = {};
-        data["_id"] = nextID;
-        seq = txInfo.sequence_number;
-        data["seq"] = seq;
-        sender = "".join(["{:02x}".format(i) for i in txInfo.sender]);
-        data["sender"] = sender;
-        addr = "".join(["{:02x}".format(i) for i in txInfo.payload.value.args[0].value]);
-        data["address"] = addr;
-        val = txInfo.payload.value.args[1].value;
-        data["value"] = val;
-        maxGas = txInfo.max_gas_amount;
-        data["gas_max"] = maxGas;
-        gas = txInfo.gas_unit_price;
-        data["gas_price"] = gas;
-        expTime = txInfo.expiration_time;
-        data["time"] = expTime;
-        pubKey = "".join(["{:02x}".format(i) for i in txInfo.public_key]);
-        data["public_key"] = pubKey;
-        sig = "".join(["{:02x}".format(i) for i in txInfo.signature]);
-        data["signature"] = sig;
+            data["sender"] = txInfo.raw_txn.type.sender
+            data["receiver"] = txInfo.raw_txn.type.receiver
+            data["amount"] = txInfo.raw_txn.type.amount
 
-        # print(data);
+        data["gas_max"] = txInfo.raw_txn.max_gas_amount
+        data["gas_fee"] = txInfo.raw_txn.gas_unit_price
+        data["public_key"] = txInfo.public_key
+        data["signature"] = txInfo.signature
+        data["transaction_status"] = txInfo.info.major_status
 
-        dbh.InsertTransactionInfo(data);
+        logging.debug("Final result: {}", data)
+        # print(data)
+        datas.append(data)
 
-        dbh.ProcessFromAddresses(data["sender"], data["_id"]);
-        dbh.ProcessToAddresses(data["address"], data["_id"]);
+        senderInfo = {}
+        senderInfo["address"] = data["sender"]
+        senderInfo["balance"] = data["amount"] * -1
+        senderInfo["sequence_number"] = data["sequence_number"]
+        # print("sender")
+        # print(senderInfo)
+        HLibra.HandleAddressInfo(senderInfo)
+
+        receiverInfo = {}
+        receiverInfo["address"] = data["receiver"]
+        receiverInfo["balance"] = data["amount"]
+        receiverInfo["sequence_number"] = None
+        # print("receiver")
+        # print(receiverInfo)
+        HLibra.HandleAddressInfo(receiverInfo)
+
+    HLibra.InsertTransactions(datas)
+
+    break
