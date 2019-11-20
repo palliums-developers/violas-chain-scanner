@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String
+from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeric
 
 Base = declarative_base()
 
@@ -11,9 +11,9 @@ class LibraTransaction(Base):
     sequence_number = Column(Integer, nullable = False)
     sender = Column(String(64), nullable = False)
     receiver = Column(String(64), nullable = False)
-    amount = Column(BigInteger, nullable = False)
-    gas_fee = Column(BigInteger, nullable = False)
-    gas_max = Column(BigInteger, nullable = False)
+    amount = Column(Numeric, nullable = False)
+    gas_fee = Column(Numeric, nullable = False)
+    gas_max = Column(Numeric, nullable = False)
     expiration_time = Column(Integer, nullable = False)
     public_key = Column(String(64), nullable = False)
     signature = Column(String(128), nullable = False)
@@ -24,5 +24,5 @@ class LibraAddressInfo(Base):
 
     id = Column(Integer, primary_key = True, autoincrement = True)
     address = Column(String(64), nullable = False)
-    balance = Column(BigInteger, nullable = False)
+    balance = Column(Numeric, nullable = False)
     sequence_number = Column(Integer, nullable = False)

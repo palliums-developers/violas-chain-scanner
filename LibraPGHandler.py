@@ -16,7 +16,7 @@ class LibraPGHandler():
 
         info = {}
         info["address"] = result.address
-        info["balance"] = result.balance
+        info["balance"] = int(result.balance)
         info["sequence_number"] = result.sequence_number
 
         s.close()
@@ -32,7 +32,7 @@ class LibraPGHandler():
             info["version"] = i.id - 1
             info["sender"] = i.sender
             info["receiver"] = i.receiver
-            info["amount"] = i.amount
+            info["amount"] = int(i.amount)
             info["expiration_time"] = i.expiration_time
 
             infoList.append(info)
@@ -49,9 +49,9 @@ class LibraPGHandler():
         info["sequence_number"] = result.sequence_number
         info["sender"] = result.sender
         info["receiver"] = result.receiver
-        info["amount"] = result.amount
-        info["gas_fee"] = result.gas_fee
-        info["gas_max"] = result.gas_max
+        info["amount"] = int(result.amount)
+        info["gas_fee"] = int(result.gas_fee)
+        info["gas_max"] = int(result.gas_max)
         info["expiration_time"] = result.expiration_time
         info["public_key"] = result.public_key
         info["signature"] = result.signature
@@ -70,7 +70,7 @@ class LibraPGHandler():
             info["version"] = i.id - 1
             info["sender"] = i.sender
             info["receiver"] = i.receiver
-            info["amount"] = i.amount
+            info["amount"] = int(i.amount)
             info["expiration_time"] = i.expiration_time
 
             infoList.append(info)

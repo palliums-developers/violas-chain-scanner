@@ -6,6 +6,8 @@ from time import sleep
 
 from LibraPGHandler import LibraPGHandler
 
+logging.basicConfig(filename = "libra_explorer_core.log", level = logging.DEBUG)
+
 config = configparser.ConfigParser()
 config.read("./config.ini")
 
@@ -25,17 +27,21 @@ violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInf
 while True:
     nextID = HLibra.GetTransactionCount()
     logging.debug("Get next id is %d", nextID)
-    print(nextID)
-    limit = 100
+    limit = 1000
 
-    txInfos = libraClient.get_transactions(nextID, limit, True)
+    try:
+        txInfos = libraClient.get_transactions(nextID, limit, True)
+    except:
+        logging.error("Get transaction error: %s", e.msg)
+        continue
+
     if len(txInfos) == 0:
         sleep(1 / 1000 * 500)
         continue
 
     datas = []
     for txInfo in txInfos:
-        logging.debug("Get transaction info {}", txInfo)
+        logging.debug("Get transaction info: %s", txInfo.to_json())
         data = {}
         data["version"] = txInfo.version
         data["sequence_number"] = txInfo.raw_txn.sequence_number
@@ -46,6 +52,11 @@ while True:
             data["receiver"] = "0"
             data["amount"] = 0
             data["expiration_time"] = 0
+        elif txInfo.raw_txn.type.type == "rotate_authentication_key":
+            data["transaction_type"] = 0
+            data["sender"] = txInfo.raw_txn.type.sender
+            data["receiver"] = "0"
+            data["amount"] = 0
         else:
             if txInfo.raw_txn.type.type == "mint":
                 data["transaction_type"] = 1
@@ -62,26 +73,20 @@ while True:
         data["signature"] = txInfo.signature
         data["transaction_status"] = txInfo.info.major_status
 
-        logging.debug("Final result: {}", data)
-        # print(data)
+        logging.debug("Final result: %s", data)
+
         datas.append(data)
 
         senderInfo = {}
         senderInfo["address"] = data["sender"]
         senderInfo["balance"] = data["amount"] * -1
         senderInfo["sequence_number"] = data["sequence_number"]
-        # print("sender")
-        # print(senderInfo)
         HLibra.HandleAddressInfo(senderInfo)
 
         receiverInfo = {}
         receiverInfo["address"] = data["receiver"]
         receiverInfo["balance"] = data["amount"]
         receiverInfo["sequence_number"] = None
-        # print("receiver")
-        # print(receiverInfo)
         HLibra.HandleAddressInfo(receiverInfo)
 
     HLibra.InsertTransactions(datas)
-
-    break
