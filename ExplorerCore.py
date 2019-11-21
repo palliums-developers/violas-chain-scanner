@@ -31,8 +31,8 @@ while True:
 
     try:
         txInfos = libraClient.get_transactions(nextID, limit, True)
-    except:
-        logging.error("Get transaction error: %s", e.msg)
+    except Exception as e:
+        logging.error(f"Get transaction failed: {e}")
         continue
 
     if len(txInfos) == 0:
