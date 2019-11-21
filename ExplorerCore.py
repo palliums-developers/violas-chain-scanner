@@ -6,7 +6,7 @@ from time import sleep
 
 from LibraPGHandler import LibraPGHandler
 
-logging.basicConfig(filename = "libra_explorer_core.log", level = logging.DEBUG)
+logging.basicConfig(filename = "log.out", level = logging.DEBUG)
 
 config = configparser.ConfigParser()
 config.read("./config.ini")
