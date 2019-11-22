@@ -14,7 +14,7 @@ config.read("./config.ini")
 VIOLAS_HOST = "52.27.228.84"
 VIOLAS_PORT = 40001
 
-libraClient = Client("testnet");
+# libraClient = Client("testnet")
 violasClient = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
 
 libraDBInfo = config["LIBRA DB INFO"]
@@ -29,6 +29,7 @@ while True:
     logging.debug("Get next id is %d", nextID)
     limit = 1000
 
+    libraClient = Client("testnet")
     try:
         txInfos = libraClient.get_transactions(nextID, limit, True)
     except Exception as e:
