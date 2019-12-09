@@ -7,7 +7,7 @@ class LibraTransaction(Base):
     __tablename__ = "transactions"
 
     id = Column(BigInteger, primary_key = True, autoincrement = True)
-    transaction_type = Column(SmallInteger, nullable = False)
+    transaction_type = Column(SmallInteger, nullable = False) # 0: Genesis, 1: p2p, 2: rotate_authentication_key
     sequence_number = Column(Integer, nullable = False)
     sender = Column(String(64), nullable = False)
     receiver = Column(String(64), nullable = False)
@@ -24,6 +24,6 @@ class LibraAddressInfo(Base):
 
     id = Column(Integer, primary_key = True, autoincrement = True)
     address = Column(String(64), nullable = False)
-    address_type = Column(SmallInteger, nullable = False)
+    address_type = Column(SmallInteger, nullable = False) # 0: Minter, 1: Normal
     balance = Column(Numeric, nullable = False)
     sequence_number = Column(Integer, nullable = False)
