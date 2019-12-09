@@ -1,9 +1,9 @@
-from LibraModules import LibraAddressInfo, LibraTransaction
+from ViolasModules import ViolasAddressInfo, ViolasTransaction
 
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
-class LibraPGHandler():
+class ViolasPGHandler():
     def __init__(self, dbUrl):
         self.engine = create_engine(dbUrl)
         self.session = sessionmaker(bind = self.engine)
@@ -12,7 +12,7 @@ class LibraPGHandler():
 
     def GetAddressInfo(self, address):
         s = self.session()
-        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == address).first()
+        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == address).first()
 
         info = {}
         info["address"] = result.address
@@ -25,7 +25,7 @@ class LibraPGHandler():
 
     def GetTransactionsByAddress(self, address, limit, offset):
         s = self.session()
-        query = s.query(LibraTransaction).filter(or_(LibraTransaction.sender == address, LibraTransaction.receiver == address)).order_by(LibraTransaction.id.desc()).offset(offset).limit(limit).all()
+        query = s.query(ViolasTransaction).filter(or_(ViolasTransaction.sender == address, ViolasTransaction.receiver == address)).order_by(ViolasTransaction.id.desc()).offset(offset).limit(limit).all()
 
         infoList = []
         for i in query:
@@ -43,13 +43,14 @@ class LibraPGHandler():
 
     def GetTransactionByVersion(self, version):
         s = self.session()
-        result = s.query(LibraTransaction).filter(LibraTransaction.id == (version + 1)).first()
+        result = s.query(ViolasTransaction).filter(ViolasTransaction.id == (version + 1)).first()
 
         info = {}
         info["version"] = result.id - 1
         info["sequence_number"] = result.sequence_number
         info["sender"] = result.sender
         info["receiver"] = result.receiver
+        info["module"] = result.module
         info["amount"] = int(result.amount)
         info["gas_fee"] = int(result.gas_fee)
         info["gas_max"] = int(result.gas_max)
@@ -57,13 +58,14 @@ class LibraPGHandler():
         info["public_key"] = result.public_key
         info["signature"] = result.signature
         info["transaction_status"] = result.transaction_status
+        info["data"] = result.data
 
         s.close()
         return info
 
     def GetRecentTransaction(self, limit, offset):
         s = self.session()
-        query = s.query(LibraTransaction).order_by(LibraTransaction.id.desc()).offset(offset).limit(limit).all()
+        query = s.query(ViolasTransaction).order_by(ViolasTransaction.id.desc()).offset(offset).limit(limit).all()
 
         infoList = []
         for i in query:
@@ -82,7 +84,7 @@ class LibraPGHandler():
     def InsertTransaction(self, data):
         s = self.session()
 
-        tran = LibraTransaction(
+        tran = ViolasTransaction(
             transaction_type = data["transaction_type"],
             sequence_number = data["sequence_number"],
             sender = data["sender"],
@@ -93,7 +95,9 @@ class LibraPGHandler():
             expiration_time = data["expiration_time"],
             public_key = data["public_key"],
             signature = data["signature"],
-            transaction_status = data["transaction_status"]
+            transaction_status = data["transaction_status"],
+            module = data["module"],
+            data = data["data"]
         )
 
         s.add(tran)
@@ -106,7 +110,7 @@ class LibraPGHandler():
 
         transactions = []
         for i in data:
-            tran = LibraTransaction(
+            tran = ViolasTransaction(
                 transaction_type = i["transaction_type"],
                 sequence_number = i["sequence_number"],
                 sender = i["sender"],
@@ -117,7 +121,9 @@ class LibraPGHandler():
                 expiration_time = i["expiration_time"],
                 public_key = i["public_key"],
                 signature = i["signature"],
-                transaction_status = i["transaction_status"]
+                transaction_status = i["transaction_status"],
+                module = i["module"],
+                data = i["data"]
             )
 
             transactions.append(tran)
@@ -130,7 +136,7 @@ class LibraPGHandler():
     def HandleAddressInfo(self, data):
         s = self.session()
 
-        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["address"]).first()
+        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["address"]).first()
         if result is None:
             if data["sequence_number"] is None:
                 data["sequence_number"] = 0
@@ -138,7 +144,7 @@ class LibraPGHandler():
             info = LibraAddressInfo(
                 address = data["address"],
                 balance = data["balance"],
-                sequence_number = data["sequence_number"]
+                sequence_number = data["sequence_number"],
                 address_type = data["address_type"]
             )
 
@@ -154,7 +160,7 @@ class LibraPGHandler():
 
     def GetTransactionCount(self):
         s = self.session()
-        result = s.query(LibraTransaction).count()
+        result = s.query(ViolasTransaction).count()
         s.close()
 
         return result

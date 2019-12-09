@@ -4,9 +4,9 @@ import configparser
 from libra import Client
 from time import sleep
 
-from LibraPGHandler import LibraPGHandler
+from  ViolasPGHandler import ViolasPGHandler
 
-logging.basicConfig(filename = "log.out", level = logging.DEBUG)
+logging.basicConfig(filename = "ViolasLog.out", level = logging.DEBUG)
 
 config = configparser.ConfigParser()
 config.read("./config.ini")
@@ -14,24 +14,19 @@ config.read("./config.ini")
 VIOLAS_HOST = "52.27.228.84"
 VIOLAS_PORT = 40001
 
-# libraClient = Client("testnet")
-violasClient = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
-
-libraDBInfo = config["LIBRA DB INFO"]
-libraDBUrl = f"{libraDBInfo['DBTYPE']}+{libraDBInfo['DRIVER']}://{libraDBInfo['USERNAME']}:{libraDBInfo['PASSWORD']}@{libraDBInfo['HOSTNAME']}:{libraDBInfo['PORT']}/{libraDBInfo['DATABASE']}"
-HLibra = LibraPGHandler(libraDBUrl)
-
 violasDBInfo = config["VIOLAS DB INFO"]
 violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
+HViolas = ViolasPGHandler(violasDBUrl)
 
 while True:
-    nextID = HLibra.GetTransactionCount()
+    nextID = HViolas.GetTransactionCount()
     logging.debug("Get next id is %d", nextID)
-    limit = 1000
+    limit = 100
 
-    libraClient = Client("testnet")
+    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "../../documents/consensus_peers.config.toml")
+
     try:
-        txInfos = libraClient.get_transactions(nextID, limit, True)
+        txInfos = cli.get_transactions(nextID, limit, True)
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
         continue
@@ -43,30 +38,28 @@ while True:
     datas = []
     for txInfo in txInfos:
         logging.debug("Get transaction info: %s", txInfo.to_json())
+
         data = {}
         data["version"] = txInfo.version
         data["sequence_number"] = txInfo.raw_txn.sequence_number
         data["expiration_time"] = txInfo.raw_txn.expiration_time
+        data["address_type"] = 1
+        data["transaction_type"] = txInfo.raw_txn.type.type
+        data["sender"] = txInfo.raw_txn.type.sender
+
         if txInfo.raw_txn.type.type == "write_set":
-            data["transaction_type"] = 0
-            data["sender"] = "0"
+            data["address_type"] = 0
             data["receiver"] = "0"
             data["amount"] = 0
             data["expiration_time"] = 0
         elif txInfo.raw_txn.type.type == "rotate_authentication_key":
-            data["transaction_type"] = 0
-            data["sender"] = txInfo.raw_txn.type.sender
             data["receiver"] = "0"
             data["amount"] = 0
         else:
-            if txInfo.raw_txn.type.type == "mint":
-                data["transaction_type"] = 1
-            elif txInfo.raw_txn.type.type == "peer_to_peer_transfer":
-                data["transaction_type"] = 2
-
-            data["sender"] = txInfo.raw_txn.type.sender
             data["receiver"] = txInfo.raw_txn.type.receiver
             data["amount"] = txInfo.raw_txn.type.amount
+            data["module"] = txInfo.events[0].tag.address
+            data["data"] = txInfo.events[0].event.data
 
         data["gas_max"] = txInfo.raw_txn.max_gas_amount
         data["gas_fee"] = txInfo.raw_txn.gas_unit_price
@@ -82,12 +75,14 @@ while True:
         senderInfo["address"] = data["sender"]
         senderInfo["balance"] = data["amount"] * -1
         senderInfo["sequence_number"] = data["sequence_number"]
+        senderInfo["address_type"] = data["address_type"]
         HLibra.HandleAddressInfo(senderInfo)
 
         receiverInfo = {}
         receiverInfo["address"] = data["receiver"]
         receiverInfo["balance"] = data["amount"]
         receiverInfo["sequence_number"] = None
+        receiverInfo["address_type"] = data["address_type"]
         HLibra.HandleAddressInfo(receiverInfo)
 
     HLibra.InsertTransactions(datas)
