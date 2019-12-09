@@ -44,15 +44,17 @@ while True:
         data["sequence_number"] = txInfo.raw_txn.sequence_number
         data["expiration_time"] = txInfo.raw_txn.expiration_time
         data["address_type"] = 1
-        data["transaction_type"] = txInfo.raw_txn.type.type
         data["sender"] = txInfo.raw_txn.type.sender
+        data["transaction_type"] = 1
 
         if txInfo.raw_txn.type.type == "write_set":
+            data["transaction_type"] = 0
             data["address_type"] = 0
             data["receiver"] = "0"
             data["amount"] = 0
             data["expiration_time"] = 0
         elif txInfo.raw_txn.type.type == "rotate_authentication_key":
+            data["transaction_type"] = 2
             data["receiver"] = "0"
             data["amount"] = 0
         else:

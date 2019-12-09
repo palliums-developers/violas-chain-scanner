@@ -7,7 +7,7 @@ class LibraTransaction(Base):
     __tablename__ = "transactions"
 
     id = Column(BigInteger, primary_key = True, autoincrement = True)
-    transaction_type = Column(String(32), nullable = False)
+    transaction_type = Column(SmallInteger, nullable = False)
     sequence_number = Column(Integer, nullable = False)
     sender = Column(String(64), nullable = False)
     receiver = Column(String(64), nullable = False)

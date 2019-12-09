@@ -8,7 +8,7 @@ class ViolasTransaction(Base):
 
     id = Column(BigInteger, primary_key = True, autoincrement = True)
     sequence_number = Column(Integer, nullable = False)
-    transaction_type = Column(String(32), nullable = False)
+    transaction_type = Column(SmallInteger, nullable = False)
     sender = Column(String(64), nullable = False)
     receiver = Column(String(64), nullable = False)
     module = Column(String(64), nullable = False)
