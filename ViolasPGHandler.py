@@ -141,7 +141,7 @@ class ViolasPGHandler():
             if data["sequence_number"] is None:
                 data["sequence_number"] = 0
 
-            info = LibraAddressInfo(
+            info = ViolasAddressInfo(
                 address = data["address"],
                 balance = data["balance"],
                 sequence_number = data["sequence_number"],
