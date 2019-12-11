@@ -23,9 +23,7 @@ while True:
     logging.debug("Get next id is %d", nextID)
     limit = 100
 
-    # cli = Client("testnet")
-    # cli = Client.new("52.151.2.66", VIOLAS_PORT, "../../../Downloads/consensus_peers.config(2).toml")
-    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "../../documents/consensus_peers.config.toml")
+    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
