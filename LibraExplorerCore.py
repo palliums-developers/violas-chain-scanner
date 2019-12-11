@@ -77,11 +77,12 @@ while True:
         senderInfo["address_type"] = data["address_type"]
         HLibra.HandleAddressInfo(senderInfo)
 
-        receiverInfo = {}
-        receiverInfo["address"] = data["receiver"]
-        receiverInfo["balance"] = data["amount"]
-        receiverInfo["sequence_number"] = None
-        receiverInfo["address_type"] = data["address_type"]
-        HLibra.HandleAddressInfo(receiverInfo)
+        if hasattr(data, "receiver"):
+            receiverInfo = {}
+            receiverInfo["address"] = data["receiver"]
+            receiverInfo["balance"] = data["amount"]
+            receiverInfo["sequence_number"] = None
+            receiverInfo["address_type"] = data["address_type"]
+            HLibra.HandleAddressInfo(receiverInfo)
 
     HLibra.InsertTransactions(datas)

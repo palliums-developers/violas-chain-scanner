@@ -99,11 +99,12 @@ while True:
         senderInfo["address_type"] = data["address_type"]
         HViolas.HandleAddressInfo(senderInfo)
 
-        receiverInfo = {}
-        receiverInfo["address"] = data["receiver"]
-        receiverInfo["balance"] = data["amount"]
-        receiverInfo["sequence_number"] = None
-        receiverInfo["address_type"] = data["address_type"]
-        HViolas.HandleAddressInfo(receiverInfo)
+        if hasattr(data, "receiver"):
+            receiverInfo = {}
+            receiverInfo["address"] = data["receiver"]
+            receiverInfo["balance"] = data["amount"]
+            receiverInfo["sequence_number"] = None
+            receiverInfo["address_type"] = data["address_type"]
+            HViolas.HandleAddressInfo(receiverInfo)
 
     HViolas.InsertTransactions(datas)
