@@ -23,7 +23,8 @@ while True:
     logging.debug("Get next id is %d", nextID)
     limit = 100
 
-    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
+    cli = Client("")
+    # cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
@@ -56,7 +57,7 @@ while True:
             data["address_type"] = 0
             data["expiration_time"] = 0
 
-        if txInfo.raw_txn.type.hasattr("receiver"):
+        if hasattr(txInfo.raw_txn.type, "receiver"):
             data["receiver"] = txInfo.raw_txn.type.receiver
 
         if txInfo.raw_txn.type.hasattr("amount"):
