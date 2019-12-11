@@ -59,23 +59,23 @@ while True:
         if hasattr(txInfo.raw_txn.type, "receiver"):
             data["receiver"] = txInfo.raw_txn.type.receiver
 
-        if txInfo.raw_txn.type.hasattr("amount"):
+        if hasattr(txInfo.raw_txn.type, "amount"):
             data["amount"] = txInfo.raw_txn.type.amount
 
         if len(txInfo.events) > 0:
-            if txInfo.events[0].tag.hasattr("module"):
+            if hasattr(txInfo.events[0].tag, "module"):
                 data["module"] = txInfo.events[0].tag.module
 
-            if txInfo.events[0].tag.hasattr("address"):
+            if hasattr(txInfo.events[0].tag, "address"):
                 data["module_address"] = txInfo.events[0].tag.address
 
-            if txInfo.events[0].event.hasattr("data"):
+            if hasattr(txInfo.events[0].event, "data"):
                 data["data"] = txInfo.events[0].event.data
 
-            if txInfo.events[0].event.hasattr("etype"):
+            if hasattr(txInfo.events[0].event, "etype"):
                 data["etype"] = txInfo.events[0].event.etype
 
-            if txInfo.events[0].event.hasattr("price"):
+            if hasattr(txInfo.events[0].event, "price"):
                 data["price"] = txInfo.events[0].event.price
 
         data["public_key"] = txInfo.public_key

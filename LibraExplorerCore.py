@@ -50,10 +50,10 @@ while True:
             data["address_type"] = 0
             data["expiration_time"] = 0
 
-        if txInfo.raw_txn.type.hasattr("receiver"):
+        if hasattr(txInfo.raw_txn.type, "receiver"):
             data["receiver"] = txInfo.raw_txn.type.receiver
 
-        if txInfo.raw_txn.type.hasattr("amount"):
+        if hasattr(txInfo.raw_txn.type, "amount"):
             data["amount"] = txInfo.raw_txn.type.amount
 
         data["public_key"] = txInfo.public_key
