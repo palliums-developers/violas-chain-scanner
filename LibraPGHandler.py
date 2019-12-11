@@ -146,7 +146,7 @@ class LibraPGHandler():
             info = LibraAddressInfo(
                 address = data["address"],
                 balance = data["balance"],
-                sequence_number = data["sequence_number"]
+                sequence_number = data["sequence_number"],
                 address_type = data["address_type"]
             )
 
