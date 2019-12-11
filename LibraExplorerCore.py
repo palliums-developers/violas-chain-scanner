@@ -77,7 +77,7 @@ while True:
         senderInfo["address_type"] = data["address_type"]
         HLibra.HandleAddressInfo(senderInfo)
 
-        if hasattr(data, "receiver"):
+        if "receiver" in data:
             receiverInfo = {}
             receiverInfo["address"] = data["receiver"]
             receiverInfo["balance"] = data["amount"]

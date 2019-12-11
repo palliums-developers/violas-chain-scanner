@@ -83,21 +83,21 @@ class LibraPGHandler():
         s = self.session()
 
         tran = LibraTransaction(
-            sender = data["sender"],
-            sequence_number = data["sequence_number"],
-            max_gas_amount = data["max_gas_amount"],
-            gas_unit_price = data["gas_unit_price"],
-            expiration_time = data["expiration_time"],
-            transaction_type = data["transaction_type"],
-            receiver = data["receiver"],
-            amount = data["amount"],
-            public_key = data["public_key"],
-            signature = data["signature"],
-            transaction_hash = data["transaction_hash"],
-            state_root_hash = data["state_root_hash"],
-            event_root_hash = data["event_root_hash"],
-            gas_used = data["gas_used"],
-            status = data["status"]
+            sender = data.get("sender"),
+            sequence_number = data.get("sequence_number"),
+            max_gas_amount = data.get("max_gas_amount"),
+            gas_unit_price = data.get("gas_unit_price"),
+            expiration_time = data.get("expiration_time"),
+            transaction_type = data.get("transaction_type"),
+            receiver = data.get("receiver"),
+            amount = data.get("amount"),
+            public_key = data.get("public_key"),
+            signature = data.get("signature"),
+            transaction_hash = data.get("transaction_hash"),
+            state_root_hash = data.get("state_root_hash"),
+            event_root_hash = data.get("event_root_hash"),
+            gas_used = data.get("gas_used"),
+            status = data.get("status")
         )
 
         s.add(tran)
@@ -111,21 +111,21 @@ class LibraPGHandler():
         transactions = []
         for i in data:
             tran = LibraTransaction(
-                sender = i["sender"],
-                sequence_number = i["sequence_number"],
-                max_gas_amount = i["max_gas_amount"],
-                gas_unit_price = i["gas_unit_price"],
-                expiration_time = i["expiration_time"],
-                transaction_type = i["transaction_type"],
-                receiver = i["receiver"],
-                amount = i["amount"],
-                public_key = i["public_key"],
-                signature = i["signature"],
-                transaction_hash = i["transaction_hash"],
-                state_root_hash = i["state_root_hash"],
-                event_root_hash = i["event_root_hash"],
-                gas_used = i["gas_used"],
-                status = i["status"]
+                sender = i.get("sender"),
+                sequence_number = i.get("sequence_number"),
+                max_gas_amount = i.get("max_gas_amount"),
+                gas_unit_price = i.get("gas_unit_price"),
+                expiration_time = i.get("expiration_time"),
+                transaction_type = i.get("transaction_type"),
+                receiver = i.get("receiver"),
+                amount = i.get("amount"),
+                public_key = i.get("public_key"),
+                signature = i.get("signature"),
+                transaction_hash = i.get("transaction_hash"),
+                state_root_hash = i.get("state_root_hash"),
+                event_root_hash = i.get("event_root_hash"),
+                gas_used = i.get("gas_used"),
+                status = i.get("status")
             )
 
             transactions.append(tran)

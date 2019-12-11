@@ -99,7 +99,7 @@ while True:
         senderInfo["address_type"] = data["address_type"]
         HViolas.HandleAddressInfo(senderInfo)
 
-        if hasattr(data, "receiver"):
+        if "receiver" in data:
             receiverInfo = {}
             receiverInfo["address"] = data["receiver"]
             receiverInfo["balance"] = data["amount"]
