@@ -23,7 +23,9 @@ while True:
     logging.debug("Get next id is %d", nextID)
     limit = 100
 
-    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
+    # cli = Client("testnet")
+    # cli = Client.new("52.151.2.66", VIOLAS_PORT, "../../../Downloads/consensus_peers.config(2).toml")
+    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "../../documents/consensus_peers.config.toml")
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
@@ -41,33 +43,50 @@ while True:
 
         data = {}
         data["version"] = txInfo.version
+        data["sender"] = txInfo.raw_txn.sender
         data["sequence_number"] = txInfo.raw_txn.sequence_number
+        data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
+        data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
         data["expiration_time"] = txInfo.raw_txn.expiration_time
         data["address_type"] = 1
-        data["sender"] = txInfo.raw_txn.type.sender
-        data["transaction_type"] = 1
+        data["transaction_type"] = txInfo.raw_txn.type.type
+
+        txType = txInfo.raw_txn.type.type
+        logging.debug(f"DEBUG:::Transaction Type: {txType}")
 
         if txInfo.raw_txn.type.type == "write_set":
-            data["transaction_type"] = 0
             data["address_type"] = 0
-            data["receiver"] = "0"
-            data["amount"] = 0
             data["expiration_time"] = 0
-        elif txInfo.raw_txn.type.type == "rotate_authentication_key":
-            data["transaction_type"] = 2
-            data["receiver"] = "0"
-            data["amount"] = 0
-        else:
-            data["receiver"] = txInfo.raw_txn.type.receiver
-            data["amount"] = txInfo.raw_txn.type.amount
-            data["module"] = txInfo.events[0].tag.address
-            data["data"] = txInfo.events[0].event.data
 
-        data["gas_max"] = txInfo.raw_txn.max_gas_amount
-        data["gas_fee"] = txInfo.raw_txn.gas_unit_price
+        if txInfo.raw_txn.type.hasattr("receiver"):
+            data["receiver"] = txInfo.raw_txn.type.receiver
+
+        if txInfo.raw_txn.type.hasattr("amount"):
+            data["amount"] = txInfo.raw_txn.type.amount
+
+        if len(txInfo.events) > 0:
+            if txInfo.events[0].tag.hasattr("module"):
+                data["module"] = txInfo.events[0].tag.module
+
+            if txInfo.events[0].tag.hasattr("address"):
+                data["module_address"] = txInfo.events[0].tag.address
+
+            if txInfo.events[0].event.hasattr("data"):
+                data["data"] = txInfo.events[0].event.data
+
+            if txInfo.events[0].event.hasattr("etype"):
+                data["etype"] = txInfo.events[0].event.etype
+
+            if txInfo.events[0].event.hasattr("price"):
+                data["price"] = txInfo.events[0].event.price
+
         data["public_key"] = txInfo.public_key
         data["signature"] = txInfo.signature
-        data["transaction_status"] = txInfo.info.major_status
+        data["transaction_hash"] = txInfo.info.transaction_hash
+        data["state_root_hash"] = txInfo.info.state_root_hash
+        data["event_root_hash"] = txInfo.info.event_root_hash
+        data["gas_used"] = txInfo.info.gas_used
+        data["status"] = txInfo.info.major_status
 
         logging.debug("Final result: %s", data)
 

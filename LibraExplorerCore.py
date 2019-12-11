@@ -38,31 +38,31 @@ while True:
 
         data = {}
         data["version"] = txInfo.version
+        data["sender"] = txInfo.raw_txn.sender
         data["sequence_number"] = txInfo.raw_txn.sequence_number
+        data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
+        data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
         data["expiration_time"] = txInfo.raw_txn.expiration_time
         data["address_type"] = 1
-        data["sender"] = txInfo.raw_txn.type.sender
-        data["transaction_type"] = 1
+        data["transaction_type"] = txInfo.raw_txn.type.type
 
         if txInfo.raw_txn.type.type == "write_set":
-            data["transaction_type"] = 0
             data["address_type"] = 0
-            data["receiver"] = "0"
-            data["amount"] = 0
             data["expiration_time"] = 0
-        elif txInfo.raw_txn.type.type == "rotate_authentication_key":
-            data["transaction_type"] = 2
-            data["receiver"] = "0"
-            data["amount"] = 0
-        else:
+
+        if txInfo.raw_txn.type.hasattr("receiver"):
             data["receiver"] = txInfo.raw_txn.type.receiver
+
+        if txInfo.raw_txn.type.hasattr("amount"):
             data["amount"] = txInfo.raw_txn.type.amount
 
-        data["gas_max"] = txInfo.raw_txn.max_gas_amount
-        data["gas_fee"] = txInfo.raw_txn.gas_unit_price
         data["public_key"] = txInfo.public_key
         data["signature"] = txInfo.signature
-        data["transaction_status"] = txInfo.info.major_status
+        data["transaction_hash"] = txInfo.info.transaction_hash
+        data["state_root_hash"] = txInfo.info.state_root_hash
+        data["event_root_hash"] = txInfo.info.event_root_hash
+        data["gas_used"] = txInfo.info.gas_used
+        data["status"] = txInfo.info.major_status
 
         logging.debug("Final result: %s", data)
 
