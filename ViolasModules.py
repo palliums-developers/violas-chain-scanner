@@ -12,7 +12,7 @@ class ViolasTransaction(Base):
     max_gas_amount = Column(Numeric, nullable = False)
     gas_unit_price = Column(Numeric, nullable = False)
     expiration_time = Column(Integer, nullable = False)
-    transaction_type = Column(String(32), nullable = False)
+    transaction_type = Column(String(64), nullable = False)
     receiver = Column(String(64), nullable = True)
     amount = Column(Numeric, nullable = True)
     module = Column(String(16), nullable = True)
