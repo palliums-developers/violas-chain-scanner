@@ -21,7 +21,7 @@ HViolas = ViolasPGHandler(violasDBUrl)
 while True:
     nextID = HViolas.GetTransactionCount()
     logging.debug("Get next id is %d", nextID)
-    limit = 100
+    limit = 10
 
     cli = Client("")
     # cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
