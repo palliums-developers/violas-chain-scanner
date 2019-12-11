@@ -61,6 +61,8 @@ while True:
 
         if hasattr(txInfo.raw_txn.type, "amount"):
             data["amount"] = txInfo.raw_txn.type.amount
+        else:
+            data["amount"] = 0
 
         if len(txInfo.events) > 0:
             if hasattr(txInfo.events[0].tag, "module"):

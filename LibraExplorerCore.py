@@ -55,6 +55,8 @@ while True:
 
         if hasattr(txInfo.raw_txn.type, "amount"):
             data["amount"] = txInfo.raw_txn.type.amount
+        else:
+            data["amount"] = 0
 
         data["public_key"] = txInfo.public_key
         data["signature"] = txInfo.signature
