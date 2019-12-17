@@ -45,6 +45,8 @@ while True:
                 data["transaction_type"] = "metadata"
                 data["expiration_time"] = txInfo.timestamp_usec / 1000000
                 data["amount"] = 0
+                data["sequence_number"] = 0
+                data["address_type"] = 1
             else:
                 data["sender"] = txInfo.raw_txn.sender
                 data["sequence_number"] = txInfo.raw_txn.sequence_number
