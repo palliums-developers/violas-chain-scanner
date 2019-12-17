@@ -18,7 +18,7 @@ HLibra = LibraPGHandler(libraDBUrl)
 while True:
     nextID = HLibra.GetTransactionCount()
     logging.debug(f"Get next id is: {nextID}")
-    limit = 100
+    limit = 1000
 
     cli = Client("testnet")
 
