@@ -20,7 +20,7 @@ while True:
     logging.debug(f"Get next id is: {nextID}")
     limit = 100
 
-    cli = Client("ac.testnet.libra.org", 8000)
+    cli = Client("testnet")
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
