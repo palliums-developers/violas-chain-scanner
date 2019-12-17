@@ -17,10 +17,10 @@ HLibra = LibraPGHandler(libraDBUrl)
 
 while True:
     nextID = HLibra.GetTransactionCount()
-    logging.debug("Get next id is %d", nextID)
+    logging.debug(f"Get next id is: {nextID}")
     limit = 100
 
-    cli = Client("testnet")
+    cli = Client("ac.testnet.libra.org", 8000)
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
@@ -34,39 +34,50 @@ while True:
 
     datas = []
     for txInfo in txInfos:
-        logging.debug("Get transaction info: %s", txInfo.to_json())
+        logging.debug(f"Get transaction info: {txInfo}")
 
         data = {}
         data["version"] = txInfo.version
-        data["sender"] = txInfo.raw_txn.sender
-        data["sequence_number"] = txInfo.raw_txn.sequence_number
-        data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
-        data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
-        data["expiration_time"] = txInfo.raw_txn.expiration_time
-        data["address_type"] = 1
-        data["transaction_type"] = txInfo.raw_txn.type.type
 
-        if txInfo.raw_txn.type.type == "write_set":
-            data["address_type"] = 0
-            data["expiration_time"] = 0
+        try:
+            if hasattr(txInfo, "proposer"):
+                data["sender"] = txInfo.proposer
+                data["transaction_type"] = "metadata"
+                data["expiration_time"] = txInfo.timestamp_usec / 1000000
+                data["amount"] = 0
+            else:
+                data["sender"] = txInfo.raw_txn.sender
+                data["sequence_number"] = txInfo.raw_txn.sequence_number
+                data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
+                data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
+                data["expiration_time"] = txInfo.raw_txn.expiration_time
+                data["address_type"] = 1
+                data["transaction_type"] = txInfo.raw_txn.type.type
 
-        if hasattr(txInfo.raw_txn.type, "receiver"):
-            data["receiver"] = txInfo.raw_txn.type.receiver
+                if txInfo.raw_txn.type.type == "write_set":
+                    data["address_type"] = 0
+                    data["expiration_time"] = 0
 
-        if hasattr(txInfo.raw_txn.type, "amount"):
-            data["amount"] = txInfo.raw_txn.type.amount
-        else:
-            data["amount"] = 0
+                if hasattr(txInfo.raw_txn.type, "receiver"):
+                    data["receiver"] = txInfo.raw_txn.type.receiver
 
-        data["public_key"] = txInfo.public_key
-        data["signature"] = txInfo.signature
-        data["transaction_hash"] = txInfo.info.transaction_hash
-        data["state_root_hash"] = txInfo.info.state_root_hash
-        data["event_root_hash"] = txInfo.info.event_root_hash
-        data["gas_used"] = txInfo.info.gas_used
-        data["status"] = txInfo.info.major_status
+                if hasattr(txInfo.raw_txn.type, "amount"):
+                    data["amount"] = txInfo.raw_txn.type.amount
+                else:
+                    data["amount"] = 0
 
-        logging.debug("Final result: %s", data)
+                data["public_key"] = txInfo.public_key
+                data["signature"] = txInfo.signature
+
+            data["transaction_hash"] = txInfo.info.transaction_hash
+            data["state_root_hash"] = txInfo.info.state_root_hash
+            data["event_root_hash"] = txInfo.info.event_root_hash
+            data["gas_used"] = txInfo.info.gas_used
+            data["status"] = txInfo.info.major_status
+
+        except Exception as e:
+            logging.error(f"Parse txInfo failed: {txInfo}")
+            exit(1)
 
         datas.append(data)
 

@@ -20,10 +20,10 @@ HViolas = ViolasPGHandler(violasDBUrl)
 
 while True:
     nextID = HViolas.GetTransactionCount()
-    logging.debug("Get next id is %d", nextID)
-    limit = 10
+    logging.debug(f"Get next id is: {nextID}")
+    limit = 100
 
-    cli = Client.new(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config.toml")
+    cli = Client(VIOLAS_HOST, VIOLAS_PORT, "/tmp/consensus_peers.config(5).toml", "/tmp/faucet_keys(1)")
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
@@ -37,58 +37,66 @@ while True:
 
     datas = []
     for txInfo in txInfos:
-        logging.debug("Get transaction info: %s", txInfo.to_json())
+        logging.debug(f"Get transaction info: {txInfo}")
 
         data = {}
         data["version"] = txInfo.version
-        data["sender"] = txInfo.raw_txn.sender
-        data["sequence_number"] = txInfo.raw_txn.sequence_number
-        data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
-        data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
-        data["expiration_time"] = txInfo.raw_txn.expiration_time
-        data["address_type"] = 1
-        data["transaction_type"] = txInfo.raw_txn.type.type
 
-        txType = txInfo.raw_txn.type.type
-        logging.debug(f"DEBUG:::Transaction Type: {txType}")
+        try:
+            if hasattr(txInfo, "proposer"):
+                data["sender"] = txInfo.proposer
+                data["transaction_type"] = "metadata"
+                data["expiration_time"] = txInfo.timestamp_usec / 1000000
+                data["amount"] = 0
+            else:
+                data["sender"] = txInfo.raw_txn.sender
+                data["sequence_number"] = txInfo.raw_txn.sequence_number
+                data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
+                data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
+                data["expiration_time"] = txInfo.raw_txn.expiration_time
+                data["address_type"] = 1
+                data["transaction_type"] = txInfo.raw_txn.type.type
 
-        if txInfo.raw_txn.type.type == "write_set":
-            data["address_type"] = 0
-            data["expiration_time"] = 0
+                if txInfo.raw_txn.type.type == "write_set":
+                    data["address_type"] = 0
+                    data["expiration_time"] = 0
 
-        if hasattr(txInfo.raw_txn.type, "receiver"):
-            data["receiver"] = txInfo.raw_txn.type.receiver
+                if hasattr(txInfo.raw_txn.type, "receiver"):
+                    data["receiver"] = txInfo.raw_txn.type.receiver
 
-        if hasattr(txInfo.raw_txn.type, "amount"):
-            data["amount"] = txInfo.raw_txn.type.amount
-        else:
-            data["amount"] = 0
+                if hasattr(txInfo.raw_txn.type, "amount"):
+                    data["amount"] = txInfo.raw_txn.type.amount
+                else:
+                    data["amount"] = 0
 
-        if len(txInfo.events) > 0:
-            if hasattr(txInfo.events[0].tag, "module"):
-                data["module"] = txInfo.events[0].tag.module
+                if len(txInfo.events) > 0:
+                    if hasattr(txInfo.events[0].tag, "module"):
+                        data["module"] = txInfo.events[0].tag.module
 
-            if hasattr(txInfo.events[0].tag, "address"):
-                data["module_address"] = txInfo.events[0].tag.address
+                    if hasattr(txInfo.events[0].tag, "address"):
+                        data["module_address"] = txInfo.events[0].tag.address
 
-            if hasattr(txInfo.events[0].event, "data"):
-                data["data"] = txInfo.events[0].event.data
+                    if hasattr(txInfo.events[0].event, "data"):
+                        data["data"] = txInfo.events[0].event.data
 
-            if hasattr(txInfo.events[0].event, "etype"):
-                data["etype"] = txInfo.events[0].event.etype
+                    if hasattr(txInfo.events[0].event, "etype"):
+                        data["etype"] = txInfo.events[0].event.etype
 
-            if hasattr(txInfo.events[0].event, "price"):
-                data["price"] = txInfo.events[0].event.price
+                    if hasattr(txInfo.events[0].event, "price"):
+                        data["price"] = txInfo.events[0].event.price
 
-        data["public_key"] = txInfo.public_key
-        data["signature"] = txInfo.signature
-        data["transaction_hash"] = txInfo.info.transaction_hash
-        data["state_root_hash"] = txInfo.info.state_root_hash
-        data["event_root_hash"] = txInfo.info.event_root_hash
-        data["gas_used"] = txInfo.info.gas_used
-        data["status"] = txInfo.info.major_status
+                data["public_key"] = txInfo.public_key
+                data["signature"] = txInfo.signature
 
-        logging.debug("Final result: %s", data)
+            data["transaction_hash"] = txInfo.info.transaction_hash
+            data["state_root_hash"] = txInfo.info.state_root_hash
+            data["event_root_hash"] = txInfo.info.event_root_hash
+            data["gas_used"] = txInfo.info.gas_used
+            data["status"] = txInfo.info.major_status
+
+        except Exception as e:
+            logging.error(f"Final result: {txInfo}")
+            exit(1)
 
         datas.append(data)
 
