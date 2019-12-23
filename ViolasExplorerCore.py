@@ -48,6 +48,9 @@ while True:
                 data["transaction_type"] = "metadata"
                 data["expiration_time"] = txInfo.timestamp_usec / 1000000
                 data["amount"] = 0
+                data["max_gas_amount"] = 0
+                data["gas_unit_price"] = 0
+                data["gas_used"] = 0
                 data["sequence_number"] = 0
                 data["address_type"] = 1
             else:
