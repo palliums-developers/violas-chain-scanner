@@ -26,7 +26,7 @@ while True:
     cli = Client("violas_testnet", "/tmp/consensus_peers.config.toml", "/tmp/faucet_keys")
 
     try:
-        txInfos = cli.get_transactions(nextID, limit, True)
+        txInfos = cli.get_transactions(nextID, limit, False)
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
         continue
@@ -73,21 +73,27 @@ while True:
                 else:
                     data["amount"] = 0
 
-                if len(txInfo.events) > 0:
-                    if hasattr(txInfo.events[0].tag, "module"):
-                        data["module"] = txInfo.events[0].tag.module
+                if hasattr(txInfo.raw_txn.type, "sender_module_address"):
+                    data["module"] = txInfo.raw_txn.type.sender_module_address
 
-                    if hasattr(txInfo.events[0].tag, "address"):
-                        data["module_address"] = txInfo.events[0].tag.address
+                if hasattr(txInfo.raw_txn.type, "data"):
+                    data["data"] = txInfo.raw_txn.type.data
 
-                    if hasattr(txInfo.events[0].event, "data"):
-                        data["data"] = txInfo.events[0].event.data
+                # if len(txInfo.events) > 0:
+                #     if hasattr(txInfo.events[0].tag, "module"):
+                #         data["module"] = txInfo.events[0].tag.module
 
-                    if hasattr(txInfo.events[0].event, "etype"):
-                        data["etype"] = txInfo.events[0].event.etype
+                #     if hasattr(txInfo.events[0].tag, "address"):
+                #         data["module_address"] = txInfo.events[0].tag.address
 
-                    if hasattr(txInfo.events[0].event, "price"):
-                        data["price"] = txInfo.events[0].event.price
+                #     if hasattr(txInfo.events[0].event, "data"):
+                #         data["data"] = txInfo.events[0].event.data
+
+                #     if hasattr(txInfo.events[0].event, "etype"):
+                #         data["etype"] = txInfo.events[0].event.etype
+
+                #     if hasattr(txInfo.events[0].event, "price"):
+                #         data["price"] = txInfo.events[0].event.price
 
                 data["public_key"] = txInfo.public_key
                 data["signature"] = txInfo.signature
