@@ -54,7 +54,10 @@ while True:
                 data["sequence_number"] = txInfo.raw_txn.sequence_number
                 data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
                 data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
-                data["expiration_time"] = txInfo.raw_txn.expiration_time
+                if txInfo.raw_txn.expiration_time > 2147483647:
+                    data["expiration_time"] = 0
+                else:
+                    data["expiration_time"] = txInfo.raw_txn.expiration_time
                 data["address_type"] = 1
                 data["transaction_type"] = txInfo.raw_txn.type.type
 
