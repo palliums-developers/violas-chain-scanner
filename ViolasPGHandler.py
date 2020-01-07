@@ -141,26 +141,85 @@ class ViolasPGHandler():
         s.close()
         return
 
-    def HandleAddressInfo(self, data):
+    def HandleSenderAddressInfo(self, data):
         s = self.session()
 
-        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["address"]).first()
-        if result is None:
-            if data["sequence_number"] is None:
-                data["sequence_number"] = 0
+        if data["transaction_type"] == "mint" or data["transaction_type"] == "violas_mint":
+            sent_minted_tx_count = 1
+        else:
+            sent_minted_tx_count = 0
 
+        if data["status"] != 4001:
+            sent_failed_tx_count = 1
+            sent_amount = data["amount"]
+        else:
+            sent_failed_tx_count = 0
+            sent_amount = 0
+
+        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["sender"]).first()
+        if result is None:
             info = ViolasAddressInfo(
                 address = data["address"],
-                balance = data["balance"],
-                sequence_number = data["sequence_number"],
-                address_type = data["address_type"]
+                type = data["address_type"],
+                first_seen = data["version"],
+                sent_amount = sent_amount,
+                sent_tx_count = 1,
+                sent_minted_tx_count = sent_minted_tx_count,
+                sent_failed_tx_count = sent_failed_tx_count,
+                received_amount = 0,
+                received_tx_count = 0,
+                received_minted_tx_count = 0,
+                received_failed_tx_count = 0
             )
 
             s.add(info)
         else:
-            result.balance = result.balance + data["balance"]
-            if data["sequence_number"] is not None:
-                result.sequence_number = data["sequence_number"]
+            result.sent_amount += sent_amount
+            result.sent_tx_count += 1
+            result.sent_minted_tx_count += sent_minted_tx_count
+            result.sent_failed_tx_count += sent_failed_tx_count
+
+        s.commit()
+        s.close()
+        return
+
+    def HandleReceiverAddressInfo(self, data):
+        s = self.session()
+
+        if data["transaction_type"] == "mint" or data["transaction_type"] == "violas_mint":
+            received_minted_tx_count = 1
+        else:
+            received_minted_tx_count = 0
+
+        if data["status"] != 4001:
+            received_failed_tx_count = 1
+            received_amount = data["amount"]
+        else:
+            received_failed_tx_count = 0
+            received_amount = 0
+
+        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["receiver"]).first()
+        if result is None:
+            info = ViolasAddressInfo(
+                address = data["address"],
+                type = data["address_type"],
+                first_seen = data["version"],
+                received_amount = received_amount,
+                received_tx_count = 1,
+                received_minted_tx_count = received_minted_tx_count,
+                received_failed_tx_count = received_failed_tx_count,
+                sent_amount = 0,
+                sent_tx_count = 0,
+                sent_minted_tx_count = 0,
+                sent_failed_tx_count = 0
+            )
+
+            s.add(info)
+        else:
+            result.received_amount += received_amount
+            result.received_tx_count += 1
+            result.received_minted_tx_count += received_minted_tx_count
+            result.received_failed_tx_count += received_failed_tx_count
 
         s.commit()
         s.close()

@@ -108,21 +108,11 @@ while True:
             logging.error(f"Final result: {txInfo}")
             exit(1)
 
-        datas.append(data)
-
-        senderInfo = {}
-        senderInfo["address"] = data["sender"]
-        senderInfo["balance"] = data["amount"] * -1
-        senderInfo["sequence_number"] = data["sequence_number"]
-        senderInfo["address_type"] = data["address_type"]
-        HViolas.HandleAddressInfo(senderInfo)
+        HViolas.HandleSenderAddressInfo(data)
 
         if "receiver" in data:
-            receiverInfo = {}
-            receiverInfo["address"] = data["receiver"]
-            receiverInfo["balance"] = data["amount"]
-            receiverInfo["sequence_number"] = None
-            receiverInfo["address_type"] = data["address_type"]
-            HViolas.HandleAddressInfo(receiverInfo)
+            HViolas.HandleReceiverAddressInfo(data)
+
+        datas.append(data)
 
     HViolas.InsertTransactions(datas)

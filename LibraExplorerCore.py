@@ -88,19 +88,9 @@ while True:
 
         datas.append(data)
 
-        senderInfo = {}
-        senderInfo["address"] = data["sender"]
-        senderInfo["balance"] = data["amount"] * -1
-        senderInfo["sequence_number"] = data["sequence_number"]
-        senderInfo["address_type"] = data["address_type"]
-        HLibra.HandleAddressInfo(senderInfo)
+        HLibra.HandleSenderAddressInfo(data)
 
         if "receiver" in data:
-            receiverInfo = {}
-            receiverInfo["address"] = data["receiver"]
-            receiverInfo["balance"] = data["amount"]
-            receiverInfo["sequence_number"] = None
-            receiverInfo["address_type"] = data["address_type"]
-            HLibra.HandleAddressInfo(receiverInfo)
+            HLibra.HandleReceiverAddressInfo(data)
 
     HLibra.InsertTransactions(datas)
