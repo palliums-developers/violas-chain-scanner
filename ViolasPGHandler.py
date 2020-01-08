@@ -88,7 +88,7 @@ class ViolasPGHandler():
         result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["sender"]).first()
         if result is None:
             info = ViolasAddressInfo(
-                address = data["address"],
+                address = data["sender"],
                 type = data["address_type"],
                 first_seen = data["version"],
                 sent_amount = sent_amount,
@@ -130,7 +130,7 @@ class ViolasPGHandler():
         result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["receiver"]).first()
         if result is None:
             info = ViolasAddressInfo(
-                address = data["address"],
+                address = data["receiver"],
                 type = data["address_type"],
                 first_seen = data["version"],
                 received_amount = received_amount,

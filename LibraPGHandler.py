@@ -84,7 +84,7 @@ class LibraPGHandler():
         result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
         if result is None:
             info = LibraAddressInfo(
-                address = data["address"],
+                address = data["sender"],
                 type = data["address_type"],
                 first_seen = data["version"],
                 sent_amount = sent_amount,
@@ -126,7 +126,7 @@ class LibraPGHandler():
         result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
         if result is None:
             info = LibraAddressInfo(
-                address = data["address"],
+                address = data["receiver"],
                 type = data["address_type"],
                 first_seen = data["version"],
                 received_amount = received_amount,
