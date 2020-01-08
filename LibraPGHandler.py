@@ -10,75 +10,6 @@ class LibraPGHandler():
 
         return
 
-    def GetAddressInfo(self, address):
-        s = self.session()
-        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == address).first()
-
-        info = {}
-        info["address"] = result.address
-        info["balance"] = int(result.balance)
-        info["sequence_number"] = result.sequence_number
-        info["address_type"] = result.address_type
-
-        s.close()
-        return info
-
-    def GetTransactionsByAddress(self, address, limit, offset):
-        s = self.session()
-        query = s.query(LibraTransaction).filter(or_(LibraTransaction.sender == address, LibraTransaction.receiver == address)).order_by(LibraTransaction.id.desc()).offset(offset).limit(limit).all()
-
-        infoList = []
-        for i in query:
-            info = {}
-            info["version"] = i.id - 1
-            info["sender"] = i.sender
-            info["receiver"] = i.receiver
-            info["amount"] = int(i.amount)
-            info["expiration_time"] = i.expiration_time
-
-            infoList.append(info)
-
-        s.close()
-        return infoList
-
-    def GetTransactionByVersion(self, version):
-        s = self.session()
-        result = s.query(LibraTransaction).filter(LibraTransaction.id == (version + 1)).first()
-
-        info = {}
-        info["version"] = result.id - 1
-        info["sequence_number"] = result.sequence_number
-        info["sender"] = result.sender
-        info["receiver"] = result.receiver
-        info["amount"] = int(result.amount)
-        info["max_gas_amount"] = int(result.max_gas_amount)
-        info["gas_unit_price"] = int(result.gas_unit_price)
-        info["expiration_time"] = result.expiration_time
-        info["public_key"] = result.public_key
-        info["signature"] = result.signature
-        info["status"] = result.status
-
-        s.close()
-        return info
-
-    def GetRecentTransaction(self, limit, offset):
-        s = self.session()
-        query = s.query(LibraTransaction).order_by(LibraTransaction.id.desc()).offset(offset).limit(limit).all()
-
-        infoList = []
-        for i in query:
-            info = {}
-            info["version"] = i.id - 1
-            info["sender"] = i.sender
-            info["receiver"] = i.receiver
-            info["amount"] = int(i.amount)
-            info["expiration_time"] = i.expiration_time
-
-            infoList.append(info)
-
-        s.close()
-        return infoList
-
     def InsertTransaction(self, data):
         s = self.session()
 
@@ -150,9 +81,9 @@ class LibraPGHandler():
             sent_failed_tx_count = 0
             sent_amount = 0
 
-        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["sender"]).first()
+        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
         if result is None:
-            info = ViolasAddressInfo(
+            info = LibraAddressInfo(
                 address = data["address"],
                 type = data["address_type"],
                 first_seen = data["version"],
@@ -192,9 +123,9 @@ class LibraPGHandler():
             received_failed_tx_count = 0
             received_amount = 0
 
-        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["receiver"]).first()
+        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
         if result is None:
-            info = ViolasAddressInfo(
+            info = LibraAddressInfo(
                 address = data["address"],
                 type = data["address_type"],
                 first_seen = data["version"],
