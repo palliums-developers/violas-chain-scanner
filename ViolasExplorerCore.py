@@ -1,7 +1,7 @@
 import logging
 import configparser
 
-from violas import Client
+from libra import Client
 from time import sleep
 
 from  ViolasPGHandler import ViolasPGHandler
