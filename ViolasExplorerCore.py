@@ -1,7 +1,7 @@
 import logging
 import configparser
 
-from libra import Client
+from violas import Client
 from time import sleep
 
 from  ViolasPGHandler import ViolasPGHandler
@@ -26,7 +26,7 @@ while True:
     cli = Client("violas_testnet", "/tmp/consensus_peers.config.toml", "/tmp/faucet_keys")
 
     try:
-        txInfos = cli.get_transactions(nextID, limit, False)
+        txInfos = cli.get_transactions(nextID, limit, True)
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
         continue

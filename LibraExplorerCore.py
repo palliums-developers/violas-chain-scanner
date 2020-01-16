@@ -1,7 +1,7 @@
 import logging
 import configparser
 
-from libra import Client
+from violas import Client
 from time import sleep
 
 from LibraPGHandler import LibraPGHandler
