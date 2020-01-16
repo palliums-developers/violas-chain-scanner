@@ -1,11 +1,5 @@
-__pycache__/
-bin/
-include/
-lib/
-lib64
-pyvenv.cfg
-/libra/
 *.out
-/violas
 Pipfile
 Pipfile.lock
+/libra
+/violas
