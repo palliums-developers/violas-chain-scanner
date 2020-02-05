@@ -61,7 +61,7 @@ while True:
                     data["address_type"] = 0
                 else:
                     data["expiration_time"] = txInfo.get_expiration_time()
-                    data["amount"] = txInfo.get_amount() if txInfo.get_amount() is None else 0
+                    data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
                     data["receiver"] = txInfo.get_receiver()
                     data["address_type"] = 2
 
