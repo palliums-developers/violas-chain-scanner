@@ -73,7 +73,7 @@ while True:
             data["state_root_hash"] = txInfo.get_state_root_hash()
             data["event_root_hash"] = txInfo.get_event_root_hash()
             data["gas_used"] = txInfo.get_gas_used()
-            data["major_status"] = txInfo.get_major_status()
+            data["status"] = txInfo.get_major_status()
 
         except Exception as e:
             logging.error(f"Parse txInfo failed: {e}")
