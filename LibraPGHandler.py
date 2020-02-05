@@ -76,10 +76,10 @@ class LibraPGHandler():
 
         if data["status"] != 4001:
             sent_failed_tx_count = 1
-            sent_amount = data["amount"]
+            sent_amount = 0
         else:
             sent_failed_tx_count = 0
-            sent_amount = 0
+            sent_amount = data["amount"]
 
         result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
         if result is None:
@@ -118,10 +118,10 @@ class LibraPGHandler():
 
         if data["status"] != 4001:
             received_failed_tx_count = 1
-            received_amount = data["amount"]
+            received_amount = 0
         else:
             received_failed_tx_count = 0
-            received_amount = 0
+            received_amount = data["amount"]
 
         result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
         if result is None:
