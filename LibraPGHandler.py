@@ -69,7 +69,7 @@ class LibraPGHandler():
     def HandleSenderAddressInfo(self, data):
         s = self.session()
 
-        if data["transaction_type"] == "mint" or data["transaction_type"] == "violas_mint":
+        if data["transaction_type"] == "mint":
             sent_minted_tx_count = 1
         else:
             sent_minted_tx_count = 0

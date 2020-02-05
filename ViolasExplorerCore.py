@@ -1,10 +1,10 @@
 import logging
 import configparser
-
-from libra import Client
 from time import sleep
 
-from  ViolasPGHandler import ViolasPGHandler
+from violas import Client
+from violas import TransactionType
+from ViolasPGHandler import ViolasPGHandler
 
 logging.basicConfig(filename = "ViolasLog.out", level = logging.DEBUG)
 
@@ -40,72 +40,47 @@ while True:
         logging.debug(f"Get transaction info: {txInfo}")
 
         data = {}
-        data["version"] = txInfo.version
+        data["version"] = txInfo.get_version()
 
         try:
-            if hasattr(txInfo, "proposer"):
-                data["sender"] = txInfo.proposer
-                data["transaction_type"] = "metadata"
-                data["expiration_time"] = txInfo.timestamp_usec / 1000000
+            if txInfo.get_transaction_type() == TransactionType.BLOCK_METADATA:
+                data["sender"] = txInfo.get_proposer()
+                data["expiration_time"] = txInfo.get_timestamp_usec() / 1000000
                 data["amount"] = 0
                 data["max_gas_amount"] = 0
                 data["gas_unit_price"] = 0
                 data["sequence_number"] = 0
                 data["address_type"] = 1
-            else:
-                data["sender"] = txInfo.raw_txn.sender
-                data["sequence_number"] = txInfo.raw_txn.sequence_number
-                data["max_gas_amount"] = txInfo.raw_txn.max_gas_amount
-                data["gas_unit_price"] = txInfo.raw_txn.gas_unit_price
-                data["expiration_time"] = txInfo.raw_txn.expiration_time
-                data["address_type"] = 1
-                data["transaction_type"] = txInfo.raw_txn.type.type
+            elif txInfo.get_transaction_type() == TransactionType.SIGNED_TRANSACTION:
+                data["sender"] = txInfo.get_sender()
+                data["sequence_number"] = txInfo.get_sequence_number()
+                data["max_gas_amount"] = txInfo.get_max_gas_amount()
+                data["gas_unit_price"] = txInfo.get_gas_unit_price()
 
-                if txInfo.raw_txn.type.type == "write_set":
+                if txInfo.get_version() == 0:
                     data["address_type"] = 0
                     data["expiration_time"] = 0
-
-                if hasattr(txInfo.raw_txn.type, "receiver"):
-                    data["receiver"] = txInfo.raw_txn.type.receiver
-
-                if hasattr(txInfo.raw_txn.type, "amount"):
-                    data["amount"] = txInfo.raw_txn.type.amount
-                else:
                     data["amount"] = 0
+                else:
+                    data["address_type"] = 2
+                    data["expiration_time"] = txInfo.get_expiration_time
+                    data["amount"] = txInfo.get_amount()
+                    data["receiver"] = txInfo.get_receiver()
 
-                if hasattr(txInfo.raw_txn.type, "sender_module_address"):
-                    data["module"] = txInfo.raw_txn.type.sender_module_address
-
-                if hasattr(txInfo.raw_txn.type, "data"):
-                    data["data"] = txInfo.raw_txn.type.data
-
-                # if len(txInfo.events) > 0:
-                #     if hasattr(txInfo.events[0].tag, "module"):
-                #         data["module"] = txInfo.events[0].tag.module
-
-                #     if hasattr(txInfo.events[0].tag, "address"):
-                #         data["module_address"] = txInfo.events[0].tag.address
-
-                #     if hasattr(txInfo.events[0].event, "data"):
-                #         data["data"] = txInfo.events[0].event.data
-
-                #     if hasattr(txInfo.events[0].event, "etype"):
-                #         data["etype"] = txInfo.events[0].event.etype
-
-                #     if hasattr(txInfo.events[0].event, "price"):
-                #         data["price"] = txInfo.events[0].event.price
-
+                data["module"] = txInfo.get_module_address()
+                data["data"] = txInfo.get_data()
                 data["public_key"] = txInfo.public_key
                 data["signature"] = txInfo.signature
 
-            data["transaction_hash"] = txInfo.info.transaction_hash
-            data["state_root_hash"] = txInfo.info.state_root_hash
-            data["event_root_hash"] = txInfo.info.event_root_hash
-            data["gas_used"] = txInfo.info.gas_used
-            data["status"] = txInfo.info.major_status
+            data["transaction_type"] = txInfo.get_code_type().name
+            data["transaction_hash"] = txInfo.get_transaction_hash()
+            data["state_root_hash"] = txInfo.get_state_root_hash()
+            data["event_root_hash"] = txInfo.get_event_root_hash()
+            data["gas_used"] = txInfo.get_gas_used()
+            data["status"] = txInfo.get_major_status()
 
         except Exception as e:
-            logging.error(f"Final result: {txInfo}")
+            logging.error(f"Final result: {e}")
             exit(1)
 
         HViolas.HandleSenderAddressInfo(data)
