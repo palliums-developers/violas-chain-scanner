@@ -23,7 +23,7 @@ while True:
     logging.debug(f"Get next id is: {nextID}")
     limit = 1000
 
-    cli = Client("violas_testnet", "/tmp/consensus_peers.config.toml", "/tmp/faucet_keys")
+    cli = Client.new(config["NODE INFO"]["VIOLAS_HOST"], config["NODE INFO"]["VIOLAS_POST"])
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
