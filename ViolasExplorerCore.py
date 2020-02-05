@@ -11,9 +11,6 @@ logging.basicConfig(filename = "ViolasLog.out", level = logging.DEBUG)
 config = configparser.ConfigParser()
 config.read("./config.ini")
 
-VIOLAS_HOST = "52.27.228.84"
-VIOLAS_PORT = 40001
-
 violasDBInfo = config["VIOLAS DB INFO"]
 violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
 HViolas = ViolasPGHandler(violasDBUrl)
@@ -23,7 +20,7 @@ while True:
     logging.debug(f"Get next id is: {nextID}")
     limit = 1000
 
-    cli = Client.new(config["NODE INFO"]["VIOLAS_HOST"], config["NODE INFO"]["VIOLAS_POST"])
+    cli = Client.new(config['NODE INFO']['VIOLAS_HOST'], int(config["NODE INFO"]["VIOLAS_PORT"]))
 
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
