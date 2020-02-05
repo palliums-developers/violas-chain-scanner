@@ -83,7 +83,7 @@ while True:
 
         HLibra.HandleSenderAddressInfo(data)
 
-        if "receiver" in data:
+        if data["receiver"] is not None:
             HLibra.HandleReceiverAddressInfo(data)
 
         datas.append(data)

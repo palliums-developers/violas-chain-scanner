@@ -84,7 +84,7 @@ while True:
 
         HViolas.HandleSenderAddressInfo(data)
 
-        if "receiver" in data:
+        if data["receiver"] is not None:
             HViolas.HandleReceiverAddressInfo(data)
 
         datas.append(data)
