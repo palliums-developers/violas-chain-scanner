@@ -60,14 +60,14 @@ while True:
                     data["amount"] = 0
                 else:
                     data["address_type"] = 2
-                    data["expiration_time"] = txInfo.get_expiration_time
+                    data["expiration_time"] = txInfo.get_expiration_time()
                     data["amount"] = txInfo.get_amount()
                     data["receiver"] = txInfo.get_receiver()
 
                 data["module"] = txInfo.get_module_address()
                 data["data"] = txInfo.get_data()
-                data["public_key"] = txInfo.public_key
-                data["signature"] = txInfo.signature
+                data["public_key"] = txInfo.get_public_key()
+                data["signature"] = txInfo.get_signature()
 
             data["transaction_type"] = txInfo.get_code_type().name
             data["transaction_hash"] = txInfo.get_transaction_hash()
