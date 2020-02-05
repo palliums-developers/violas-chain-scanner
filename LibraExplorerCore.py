@@ -79,11 +79,13 @@ while True:
             logging.error(f"Parse txInfo failed: {e}")
             exit(1)
 
-        datas.append(data)
+        logging.debug(f"Paser result: {data}")
 
         HLibra.HandleSenderAddressInfo(data)
 
         if "receiver" in data:
             HLibra.HandleReceiverAddressInfo(data)
+
+        datas.append(data)
 
     HLibra.InsertTransactions(datas)

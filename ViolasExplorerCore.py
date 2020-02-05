@@ -80,6 +80,8 @@ while True:
             logging.error(f"Final result: {e}")
             exit(1)
 
+        logging.debug(f"Paser result: {data}")
+
         HViolas.HandleSenderAddressInfo(data)
 
         if "receiver" in data:
