@@ -17,8 +17,8 @@ class ViolasPGHandler():
         for i in range(5):
             try:
                 session.commit()
-            except OperationalError as e:
-                logging.debug(f"ERROR: Commit failed!\n{e.msg}")
+            except OperationalError:
+                logging.debug(f"ERROR: Commit failed! Retry after {i} second.")
                 sleep(i)
 
                 continue
@@ -103,7 +103,16 @@ class ViolasPGHandler():
             sent_failed_tx_count = 0
             sent_amount = data["amount"]
 
-        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["sender"]).first()
+        for i in range(5):
+            try:
+                result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["sender"]).first()
+            except OperationalError:
+                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
+                sleep(i)
+                continue
+
+            break
+
         if result is None:
             info = ViolasAddressInfo(
                 address = data["sender"],
@@ -145,7 +154,16 @@ class ViolasPGHandler():
             received_failed_tx_count = 0
             received_amount = data["amount"]
 
-        result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["receiver"]).first()
+        for i in range(5):
+            try:
+                result = s.query(ViolasAddressInfo).filter(ViolasAddressInfo.address == data["receiver"]).first()
+            except OperationalError:
+                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
+                sleep(i)
+                continue
+
+            break
+
         if result is None:
             info = ViolasAddressInfo(
                 address = data["receiver"],
@@ -174,7 +192,17 @@ class ViolasPGHandler():
 
     def GetTransactionCount(self):
         s = self.session()
-        result = s.query(ViolasTransaction).count()
+
+        for i in range(5):
+            try:
+                result = s.query(ViolasTransaction).count()
+            except OperationalError:
+                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
+                sleep(i)
+                continue
+
+            break
+
         s.close()
 
         return result

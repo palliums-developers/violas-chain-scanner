@@ -17,8 +17,8 @@ class LibraPGHandler():
         for i in range(5):
             try:
                 session.commit()
-            except OperationalError as e:
-                logging.debug(f"ERROR: Commit failed!\n{e.msg}")
+            except OperationalError:
+                logging.debug(f"ERROR: Commit failed! Retry after {i} second.")
                 sleep(i)
 
                 continue
@@ -98,7 +98,16 @@ class LibraPGHandler():
             sent_failed_tx_count = 0
             sent_amount = data["amount"]
 
-        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
+        for i in range(5):
+            try:
+                result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
+            except OperationalError:
+                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
+                sleep(i)
+                continue
+
+            break
+
         if result is None:
             info = LibraAddressInfo(
                 address = data["sender"],
@@ -140,7 +149,16 @@ class LibraPGHandler():
             received_failed_tx_count = 0
             received_amount = data["amount"]
 
-        result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
+        for i in range(5):
+            try:
+                result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
+            except OperationalError:
+                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
+                sleep(i)
+                continue
+
+            break
+
         if result is None:
             info = LibraAddressInfo(
                 address = data["receiver"],
@@ -169,7 +187,17 @@ class LibraPGHandler():
 
     def GetTransactionCount(self):
         s = self.session()
-        result = s.query(LibraTransaction).count()
+
+        for i in range(5):
+            try:
+                result = s.query(LibraTransaction).count()
+            except OperationalError:
+                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
+                sleep(i)
+                continue
+
+            break
+
         s.close()
 
         return result
