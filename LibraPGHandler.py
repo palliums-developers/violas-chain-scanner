@@ -1,7 +1,10 @@
+import logging
+
 from LibraModules import LibraAddressInfo, LibraTransaction
 
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import OperationalError
 
 class LibraPGHandler():
     def __init__(self, dbUrl):
@@ -9,6 +12,20 @@ class LibraPGHandler():
         self.session = sessionmaker(bind = self.engine)
 
         return
+
+    def commit(self, session):
+        for i in range(5):
+            try:
+                session.commit()
+            except OperationalError as e:
+                logging.debug(f"ERROR: Commit failed!\n{e.msg}")
+                sleep(i)
+
+                continue
+
+            return True
+
+        return False
 
     def InsertTransaction(self, data):
         s = self.session()
@@ -32,7 +49,7 @@ class LibraPGHandler():
         )
 
         s.add(tran)
-        s.commit()
+        self.commit(s)
         s.close()
         return
 
@@ -62,7 +79,7 @@ class LibraPGHandler():
             transactions.append(tran)
 
         s.add_all(transactions)
-        s.commit()
+        self.commit(s)
         s.close()
         return
 
@@ -104,7 +121,7 @@ class LibraPGHandler():
             result.sent_minted_tx_count += sent_minted_tx_count
             result.sent_failed_tx_count += sent_failed_tx_count
 
-        s.commit()
+        self.commit(s)
         s.close()
         return
 
@@ -146,7 +163,7 @@ class LibraPGHandler():
             result.received_minted_tx_count += received_minted_tx_count
             result.received_failed_tx_count += received_failed_tx_count
 
-        s.commit()
+        self.commit(s)
         s.close()
         return
 
