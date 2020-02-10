@@ -14,18 +14,20 @@ class LibraPGHandler():
 
         return
 
-    def commit(self, session):
+    def Commit(self, session):
         for i in range(5):
             try:
                 session.commit()
             except OperationalError:
+                session.close()
                 logging.debug(f"ERROR: Commit failed! Retry after {i} second.")
                 sleep(i)
-
+                session = self.session()
                 continue
 
+            session.close()
             return True
-
+        session.close()
         return False
 
     def InsertTransaction(self, data):
@@ -50,8 +52,8 @@ class LibraPGHandler():
         )
 
         s.add(tran)
-        self.commit(s)
-        s.close()
+        self.Commit(s)
+
         return
 
     def InsertTransactions(self, data):
@@ -80,8 +82,8 @@ class LibraPGHandler():
             transactions.append(tran)
 
         s.add_all(transactions)
-        self.commit(s)
-        s.close()
+        self.Commit(s)
+
         return
 
     def HandleSenderAddressInfo(self, data):
@@ -103,8 +105,10 @@ class LibraPGHandler():
             try:
                 result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
             except OperationalError:
+                s.close()
                 logging.debug(f"ERROR: Query failed! Retry after {i} second!")
                 sleep(i)
+                s = self.session()
                 continue
 
             break
@@ -131,8 +135,8 @@ class LibraPGHandler():
             result.sent_minted_tx_count += sent_minted_tx_count
             result.sent_failed_tx_count += sent_failed_tx_count
 
-        self.commit(s)
-        s.close()
+        self.Commit(s)
+
         return
 
     def HandleReceiverAddressInfo(self, data):
@@ -154,8 +158,10 @@ class LibraPGHandler():
             try:
                 result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
             except OperationalError:
+                s.close()
                 logging.debug(f"ERROR: Query failed! Retry after {i} second!")
                 sleep(i)
+                s = self.session()
                 continue
 
             break
@@ -182,8 +188,8 @@ class LibraPGHandler():
             result.received_minted_tx_count += received_minted_tx_count
             result.received_failed_tx_count += received_failed_tx_count
 
-        self.commit(s)
-        s.close()
+        self.Commit(s)
+
         return
 
     def GetTransactionCount(self):
@@ -193,8 +199,10 @@ class LibraPGHandler():
             try:
                 result = s.query(LibraTransaction).count()
             except OperationalError:
+                s.close()
                 logging.debug(f"ERROR: Query failed! Retry after {i} second!")
                 sleep(i)
+                s = self.session()
                 continue
 
             break
