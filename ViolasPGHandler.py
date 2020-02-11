@@ -18,6 +18,8 @@ class ViolasPGHandler():
         for i in range(5):
             try:
                 session.commit()
+                session.close()
+                return True
             except OperationalError:
                 session.close()
                 logging.debug(f"ERROR: Commit failed! Retry after {i} second.")
@@ -27,6 +29,7 @@ class ViolasPGHandler():
                 continue
 
         session.close()
+        return False
 
     def Query(self, session, table):
         for i in range(5):
