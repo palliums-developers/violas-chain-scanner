@@ -25,10 +25,20 @@ class LibraPGHandler():
                 session = self.session()
                 continue
 
-            session.close()
-            return True
         session.close()
-        return False
+
+    def Query(self, session, table):
+        for i in range(5):
+            try:
+                return session, session.query(table)
+            except OperationalError:
+                session.close()
+                logging.debug(f"ERROR: Query failed! Retry after {i} second.")
+                sleep(i)
+                session = self.session()
+                continue
+
+        return session, False
 
     def InsertTransaction(self, data):
         s = self.session()
@@ -101,17 +111,12 @@ class LibraPGHandler():
             sent_failed_tx_count = 0
             sent_amount = data["amount"]
 
-        for i in range(5):
-            try:
-                result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["sender"]).first()
-            except OperationalError:
-                s.close()
-                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
-                sleep(i)
-                s = self.session()
-                continue
-
-            break
+        s, query = self.Query(s, LibraAddressInfo)
+        if query:
+            result = query.filter(LibraAddressInfo.address == data["sender"]).first()
+        else:
+            logging.critical(f"CRITICAL: Lost connection to the database!")
+            exit()
 
         if result is None:
             info = LibraAddressInfo(
@@ -154,17 +159,12 @@ class LibraPGHandler():
             received_failed_tx_count = 0
             received_amount = data["amount"]
 
-        for i in range(5):
-            try:
-                result = s.query(LibraAddressInfo).filter(LibraAddressInfo.address == data["receiver"]).first()
-            except OperationalError:
-                s.close()
-                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
-                sleep(i)
-                s = self.session()
-                continue
-
-            break
+        s, query = self.Query(s, LibraAddressInfo)
+        if query:
+            result = query.filter(LibraAddressInfo.address == data["receiver"]).first()
+        else:
+            logging.critical(f"CRITICAL: Lost connection to the database!")
+            exit()
 
         if result is None:
             info = LibraAddressInfo(
@@ -195,17 +195,12 @@ class LibraPGHandler():
     def GetTransactionCount(self):
         s = self.session()
 
-        for i in range(5):
-            try:
-                result = s.query(LibraTransaction).count()
-            except OperationalError:
-                s.close()
-                logging.debug(f"ERROR: Query failed! Retry after {i} second!")
-                sleep(i)
-                s = self.session()
-                continue
-
-            break
+        s, query = self.Query(s, LibraTransaction)
+        if query:
+            result = query.count()
+        else:
+            logging.critical(f"CRITICAL: Lost connection to the database!")
+            exit()
 
         s.close()
 
