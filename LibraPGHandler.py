@@ -198,8 +198,14 @@ class LibraPGHandler():
         s = self.session()
 
         try:
-            result = s.query(LibraTransaction).count()
+            result = s.query(LibraTransaction.id).order_by(LibraTransaction.id.desc()).limit(1).first()
             s.close()
+
+            if result is None:
+                result = 0
+            else:
+                result = result[0]
+
             return True, result
         except OperationalError:
             s.close()
