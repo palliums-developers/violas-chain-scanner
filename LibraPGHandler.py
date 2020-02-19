@@ -197,13 +197,10 @@ class LibraPGHandler():
     def GetTransactionCount(self):
         s = self.session()
 
-        s, query = self.Query(s, LibraTransaction)
-        if query:
-            result = query.count()
-        else:
-            logging.critical(f"CRITICAL: Lost connection to the database!")
-            exit()
-
-        s.close()
-
-        return result
+        try:
+            result = s.query(LibraTransaction).count()
+            s.close()
+            return True, result
+        except OperationalError:
+            s.close()
+            return False, None

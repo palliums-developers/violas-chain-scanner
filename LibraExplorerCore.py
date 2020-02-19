@@ -17,7 +17,10 @@ libraDBUrl = f"{libraDBInfo['DBTYPE']}+{libraDBInfo['DRIVER']}://{libraDBInfo['U
 HLibra = LibraPGHandler(libraDBUrl)
 
 while True:
-    nextID = HLibra.GetTransactionCount()
+    succ, nextID = HLibra.GetTransactionCount()
+    if not succ:
+        continue
+
     logging.debug(f"Get next id is: {nextID}")
     limit = 1000
 
