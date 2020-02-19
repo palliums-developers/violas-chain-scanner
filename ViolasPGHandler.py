@@ -203,12 +203,16 @@ class ViolasPGHandler():
     def GetTransactionCount(self):
         s = self.session()
 
-        s, query = self.Query(s, ViolasTransaction)
-        if query:
-            result = query.count()
-        else:
-            logging.critical(f"CRITICAL: Lost connection to the database!")
-            exit()
+        try:
+            result = s.query(ViolasTransaction.id).order_by(ViolasTransaction.id.desc()).limit(1).first()
+            s.close()
 
-        s.close()
-        return result
+            if result is None:
+                result = 0
+            else:
+                result = result[0]
+
+            return True, result
+        except OperationalError:
+            s.close()
+            return False, None

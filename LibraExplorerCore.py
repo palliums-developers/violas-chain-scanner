@@ -4,7 +4,6 @@ from time import sleep
 
 from violas import Client
 from violas import TransactionType
-
 from LibraPGHandler import LibraPGHandler
 
 logging.basicConfig(filename = "LibraLog.out", level = logging.DEBUG)
@@ -19,7 +18,7 @@ HLibra = LibraPGHandler(libraDBUrl)
 while True:
     succ, nextID = HLibra.GetTransactionCount()
     if not succ:
-        logging.error(f("ERROR: Get count of libra transactions failed, retry after 500ms."))
+        logging.error(f"ERROR: Get count of libra transactions failed, retry after 500ms.")
         sleep(1 / 1000 * 500)
         continue
 
