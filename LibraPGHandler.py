@@ -67,6 +67,7 @@ class LibraPGHandler():
         return
 
     def InsertTransactions(self, data):
+        logging.debug(f"DEBUG: Begin insert transactions.")
         s = self.session()
 
         transactions = []
@@ -94,6 +95,7 @@ class LibraPGHandler():
         s.add_all(transactions)
         self.Commit(s)
 
+        logging.debug(f"DEBUG: Insert transactions over.")
         return
 
     def HandleSenderAddressInfo(self, data):
