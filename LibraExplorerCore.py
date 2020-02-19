@@ -19,6 +19,8 @@ HLibra = LibraPGHandler(libraDBUrl)
 while True:
     succ, nextID = HLibra.GetTransactionCount()
     if not succ:
+        logging.error(f("ERROR: Get count of libra transactions failed, retry after 500ms."))
+        sleep(1 / 1000 * 500)
         continue
 
     logging.debug(f"Get next id is: {nextID}")
