@@ -6,7 +6,7 @@ from violas import Client
 from violas import TransactionType
 from ViolasPGHandler import ViolasPGHandler
 
-logging.basicConfig(filename = "ViolasLog.out", level = logging.DEBUG)
+logging.basicConfig(filename = "ViolasLog.out", level = logging.WARNING)
 
 config = configparser.ConfigParser()
 config.read("./config.ini")
@@ -18,7 +18,7 @@ HViolas = ViolasPGHandler(violasDBUrl)
 while True:
     succ, nextID = HViolas.GetTransactionCount()
     if not succ:
-        logging.error(f"ERROR: Get count of libra transactions failed, retry after 500ms.")
+        logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")
         sleep(1 / 1000 * 500)
         continue
 
