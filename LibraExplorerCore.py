@@ -45,7 +45,19 @@ while True:
         data["version"] = txInfo.get_version()
 
         try:
-            if txInfo.get_transaction_type() == TransactionType.BLOCK_METADATA:
+            if txInfo.get_transaction_type() == TransactionType.SIGNED_TRANSACTION:
+                data["sender"] = txInfo.get_sender()
+                data["sequence_number"] = txInfo.get_sequence_number()
+                data["max_gas_amount"] = txInfo.get_max_gas_amount()
+                data["gas_unit_price"] = txInfo.get_gas_unit_price()
+                data["expiration_time"] = txInfo.get_expiration_time()
+                data["address_type"] = 2
+                data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
+                data["receiver"] = txInfo.get_receiver()
+                data["public_key"] = txInfo.get_public_key()
+                data["signature"] = txInfo.get_signature()
+                data["transaction_type"] = txInfo.get_code_type().name
+            elif txInfo.get_transaction_type() == TransactionType.BLOCK_METADATA:
                 data["sender"] = txInfo.get_proposer()
                 data["expiration_time"] = txInfo.get_timestamp_usec() / 1000000
                 data["amount"] = 0
@@ -53,26 +65,19 @@ while True:
                 data["gas_unit_price"] = 0
                 data["sequence_number"] = 0
                 data["address_type"] = 1
-            elif txInfo.get_transaction_type() == TransactionType.SIGNED_TRANSACTION:
-                data["sender"] = txInfo.get_sender()
-                data["sequence_number"] = txInfo.get_sequence_number()
-                data["max_gas_amount"] = txInfo.get_max_gas_amount()
-                data["gas_unit_price"] = txInfo.get_gas_unit_price()
+                data["transaction_type"] = txInfo.get_transaction_type().name
+            elif txInfo.get_transaction_type() == TransactionType.WRITE_SET:
+                data["sender"] = ""
+                data["sequence_number"] = 0
+                data["max_gas_amount"] = 0
+                data["gas_unit_price"] = 0
+                data["expiration_time"] = 0
+                data["amount"] = 0
+                data["address_type"] = 0
+                data["public_key"] = ""
+                data["signature"] = ""
+                data["transaction_type"] = txInfo.get_transaction_type().name
 
-                if txInfo.get_version() == 0:
-                    data["expiration_time"] = 0
-                    data["amount"] = 0
-                    data["address_type"] = 0
-                else:
-                    data["expiration_time"] = txInfo.get_expiration_time()
-                    data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
-                    data["receiver"] = txInfo.get_receiver()
-                    data["address_type"] = 2
-
-                data["public_key"] = txInfo.get_public_key()
-                data["signature"] = txInfo.get_signature()
-
-            data["transaction_type"] = txInfo.get_code_type().name
             data["transaction_hash"] = txInfo.get_transaction_hash()
             data["state_root_hash"] = txInfo.get_state_root_hash()
             data["event_root_hash"] = txInfo.get_event_root_hash()
