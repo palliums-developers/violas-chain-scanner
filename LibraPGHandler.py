@@ -83,9 +83,8 @@ class LibraPGHandler():
                 amount = i.get("amount"),
                 public_key = i.get("public_key"),
                 signature = i.get("signature"),
-                transaction_hash = i.get("transaction_hash"),
-                state_root_hash = i.get("state_root_hash"),
-                event_root_hash = i.get("event_root_hash"),
+                script_hash = i.get("script_hash"),
+                signature_scheme = i.get("signature_scheme"),
                 gas_used = i.get("gas_used"),
                 status = i.get("status")
             )
