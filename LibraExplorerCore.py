@@ -25,8 +25,6 @@ while True:
     logging.debug(f"Get next id is: {nextID}")
     limit = 1000
 
-    cli = Client("libra_testnet")
-
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
     except Exception as e:

@@ -14,6 +14,7 @@ config.read("./config.ini")
 violasDBInfo = config["VIOLAS DB INFO"]
 violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
 HViolas = ViolasPGHandler(violasDBUrl)
+cli = Client.new(config['NODE INFO']['VIOLAS_HOST'], int(config["NODE INFO"]["VIOLAS_PORT"]))
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
@@ -25,12 +26,11 @@ while True:
     logging.debug(f"Get next id is: {nextID}")
     limit = 1000
 
-    cli = Client.new(config['NODE INFO']['VIOLAS_HOST'], int(config["NODE INFO"]["VIOLAS_PORT"]))
-
     try:
         txInfos = cli.get_transactions(nextID, limit, True)
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
+        cli = Client.new(config['NODE INFO']['VIOLAS_HOST'], int(config["NODE INFO"]["VIOLAS_PORT"]))
         continue
 
     if len(txInfos) == 0:
