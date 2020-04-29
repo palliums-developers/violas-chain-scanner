@@ -94,7 +94,8 @@ class ViolasPGHandler():
                 state_root_hash = i.get("state_root_hash"),
                 event_root_hash = i.get("event_root_hash"),
                 gas_used = i.get("gas_used"),
-                status = i.get("status")
+                status = i.get("status"),
+                token_id = i.get("token_id")
             )
 
             transactions.append(tran)

@@ -16,6 +16,7 @@ class ViolasTransaction(Base):
     receiver = Column(String(64), nullable = True)
     amount = Column(Numeric, nullable = False)
     module = Column(String(64), nullable = True)
+    token_id = Column(Integer, nullable = True)
     data = Column(String(512), nullable = True)
     public_key = Column(String(64), nullable = True)
     signature = Column(String(128), nullable = True)

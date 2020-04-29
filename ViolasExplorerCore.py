@@ -55,6 +55,7 @@ while True:
                 data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
                 data["receiver"] = txInfo.get_receiver()
                 data["module"] = txInfo.get_module_address()
+                data["token_id"] = txInfo.get_token_id()
                 data["data"] = txInfo.get_data()
                 data["public_key"] = txInfo.get_public_key()
                 data["signature"] = txInfo.get_signature()
