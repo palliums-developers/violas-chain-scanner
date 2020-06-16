@@ -73,19 +73,21 @@ class LibraPGHandler():
         transactions = []
         for i in data:
             tran = LibraTransaction(
-                sender = i.get("sender"),
                 sequence_number = i.get("sequence_number"),
-                max_gas_amount = i.get("max_gas_amount"),
+                sender = i.get("sender"),
+                receiver = i.get("receiver"),
+                currency = i.get("currency"),
+                amount = i.get("amount"),
+                gas_used = i.get("gas_used"),
                 gas_unit_price = i.get("gas_unit_price"),
+                max_gas_amount = i.get("max_gas_amount"),
                 expiration_time = i.get("expiration_time"),
                 transaction_type = i.get("transaction_type"),
-                receiver = i.get("receiver"),
-                amount = i.get("amount"),
+                data = i.get("data"),
                 public_key = i.get("public_key"),
-                signature = i.get("signature"),
                 script_hash = i.get("script_hash"),
+                signature = i.get("signature"),
                 signature_scheme = i.get("signature_scheme"),
-                gas_used = i.get("gas_used"),
                 status = i.get("status")
             )
 

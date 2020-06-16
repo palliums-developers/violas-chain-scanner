@@ -78,24 +78,22 @@ class ViolasPGHandler():
         transactions = []
         for i in data:
             tran = ViolasTransaction(
-                sender = i.get("sender"),
                 sequence_number = i.get("sequence_number"),
-                max_gas_amount = i.get("max_gas_amount"),
+                sender = i.get("sender"),
+                receiver = i.get("receiver"),
+                currency = i.get("currency"),
+                amount = i.get("amount"),
+                gas_used = i.get("gas_used"),
                 gas_unit_price = i.get("gas_unit_price"),
+                max_gas_amount = i.get("max_gas_amount"),
                 expiration_time = i.get("expiration_time"),
                 transaction_type = i.get("transaction_type"),
-                receiver = i.get("receiver"),
-                amount = i.get("amount"),
-                module = i.get("module"),
                 data = i.get("data"),
                 public_key = i.get("public_key"),
+                script_hash = i.get("script_hash"),
                 signature = i.get("signature"),
-                transaction_hash = i.get("transaction_hash"),
-                state_root_hash = i.get("state_root_hash"),
-                event_root_hash = i.get("event_root_hash"),
-                gas_used = i.get("gas_used"),
-                status = i.get("status"),
-                token_id = i.get("token_id")
+                signature_scheme = i.get("signature_scheme"),
+                status = i.get("status")
             )
 
             transactions.append(tran)

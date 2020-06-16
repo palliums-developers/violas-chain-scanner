@@ -17,6 +17,7 @@ cli = Client("libra_testnet")
 
 while True:
     succ, nextID = HLibra.GetTransactionCount()
+
     if not succ:
         logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")
         sleep(1 / 1000 * 500)
@@ -47,52 +48,39 @@ while True:
 
         try:
             if transactionType == "UserTransaction":
+                data["sequence_number"] = txInfo.get_sequence_number()
                 data["sender"] = txInfo.get_sender()
                 data["receiver"] = txInfo.get_receiver()
-                data["sequence_number"] = txInfo.transaction.value.get_sequence_number()
+                data["currency"] = txInfo.get_currency_code()
                 data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
                 data["max_gas_amount"] = txInfo.transaction.value.get_max_gas_amount()
                 data["gas_unit_price"] = txInfo.transaction.value.get_gas_unit_price()
-                data["expiration_time"] = txInfo.transaction.value.get_expiration_time()
+                data["expiration_time"] = txInfo.get_expiration_time()
                 data["public_key"] = txInfo.transaction.value.get_public_key()
-                data["signature"] = txInfo.transaction.value.get_signature()
                 data["script_hash"] = txInfo.transaction.value.get_script_hash()
+                data["signature"] = txInfo.transaction.value.get_signature()
                 data["signature_scheme"] = txInfo.transaction.value.get_signature_scheme()
-                data["transaction_type"] = txInfo.transaction.value.get_script().enum_name
+                data["data"] = txInfo.get_data() if txInfo.get_data() is not None and len(txInfo.get_data()) != 0 else None
+                data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
                 data["address_type"] = 2
             elif transactionType == "BlockMetadata":
-                data["expiration_time"] = txInfo.transaction.value.get_timestamp_usecs() / 1000000
+                data["sequence_number"] = txInfo.get_events()[0].get_sequence_number()
+                data["sender"] = txInfo.get_events()[0].get_data().value.proposer
+                data["expiration_time"] = int(txInfo.transaction.value.get_timestamp_usecs() / 1000000)
                 data["amount"] = 0
                 data["max_gas_amount"] = 0
                 data["gas_unit_price"] = 0
-                data["sequence_number"] = txInfo.get_events()[0].sequence_number
+                data["transaction_type"] = txInfo.get_code_type().name
                 data["address_type"] = 1
-                data["transaction_type"] = transactionType
             elif transactionType == "WriteSet":
-                events = txInfo.get_events()
-
-                for event in events:
-                    data["sequence_number"] = event.sequence_number
-                    eventData = event.data
-
-                    if eventData.value is None:
-                        continue
-
-                    if eventData.enum_name == "SentPayment":
-                        data["sender"] = eventData.value.receiver
-                        break
-                    elif eventData.enum_name == "ReceivedPayment":
-                        data["sender"] = eventData.value.sender
-                        break
-
+                data["sequence_number"] = 0
+                data["sender"] = ""
+                data["amount"] = 0
                 data["max_gas_amount"] = 0
                 data["gas_unit_price"] = 0
                 data["expiration_time"] = 0
-                data["amount"] = 0
+                data["transaction_type"] = txInfo.get_code_type().name
                 data["address_type"] = 0
-                data["public_key"] = ""
-                data["signature"] = ""
-                data["transaction_type"] = transactionType
 
             data["gas_used"] = txInfo.get_gas_used()
             data["status"] = txInfo.get_vm_status()
