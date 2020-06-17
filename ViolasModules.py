@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeric
+from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeric, Index
 
 Base = declarative_base()
 
@@ -23,6 +23,11 @@ class ViolasTransaction(Base):
     signature = Column(String(512), nullable = True)
     signature_scheme = Column(String(32), nullable = True)
     status = Column(SmallInteger, nullable = False)
+
+Index("address_index", ViolasTransaction.sender, ViolasTransaction.receiver)
+Index("sender_index", ViolasTransaction.sender)
+Index("receiver_index", ViolasTransaction.receiver)
+Index("currency_index", ViolasTransaction.currency)
 
 class ViolasAddressInfo(Base):
     __tablename__ = "address_info"

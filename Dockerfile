@@ -12,5 +12,6 @@ RUN pip3 install -r /explorer-core/requirements.txt
 
 WORKDIR /explorer-core
 RUN cp -rf ../libra-client/libra_client .
+RUN python3 CreateLibraTable.py
 
 CMD ["python3", "LibraExplorerCore.py"]
