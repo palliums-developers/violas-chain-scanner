@@ -13,7 +13,7 @@ config.read("./config.ini")
 violasDBInfo = config["VIOLAS DB INFO"]
 violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
 HViolas = ViolasPGHandler(violasDBUrl)
-cli = Client.new({config['NODE INFO']['VIOLAS_HOST']})
+cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
