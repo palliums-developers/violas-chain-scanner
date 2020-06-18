@@ -30,7 +30,7 @@ while True:
         txInfos = cli.get_transactions(nextID, limit, True)
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
-        cli = Client.new({config['NODE INFO']['VIOLAS_HOST']})
+        cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
         continue
 
     if len(txInfos) == 0:
