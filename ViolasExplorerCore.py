@@ -51,7 +51,7 @@ while True:
                 data["sequence_number"] = txInfo.get_sequence_number()
                 data["sender"] = txInfo.get_sender()
                 data["receiver"] = txInfo.get_receiver()
-                data["currency"] = txInfo.get_currency_code()
+                data["currency"] = txInfo.get_currency_code() if txInfo.get_currency_code() is not None else txInfo.get_gas_currency()
                 data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
                 data["max_gas_amount"] = txInfo.transaction.value.get_max_gas_amount()
                 data["gas_unit_price"] = txInfo.transaction.value.get_gas_unit_price()
