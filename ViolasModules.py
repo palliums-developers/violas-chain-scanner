@@ -16,7 +16,7 @@ class ViolasTransaction(Base):
     gas_unit_price = Column(Numeric, nullable = False)
     max_gas_amount = Column(Numeric, nullable = False)
     expiration_time = Column(Integer, nullable = False)
-    transaction_type = Column(String(32), nullable = False)
+    transaction_type = Column(String(64), nullable = False)
     data = Column(String(1024), nullable = True)
     public_key = Column(String(512), nullable = True)
     script_hash = Column(String(512), nullable = True)
