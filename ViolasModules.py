@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeric, Index
+from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Numeric, Index, Text
 
 Base = declarative_base()
 
@@ -18,10 +18,10 @@ class ViolasTransaction(Base):
     max_gas_amount = Column(Numeric, nullable = False)
     expiration_time = Column(Integer, nullable = False)
     transaction_type = Column(String(64), nullable = False)
-    data = Column(String(1024), nullable = True)
-    public_key = Column(String(512), nullable = True)
-    script_hash = Column(String(512), nullable = True)
-    signature = Column(String(512), nullable = True)
+    data = Column(Text(), nullable = True)
+    public_key = Column(Text(), nullable = True)
+    script_hash = Column(String(64), nullable = True)
+    signature = Column(Text(), nullable = True)
     signature_scheme = Column(String(32), nullable = True)
     status = Column(SmallInteger, nullable = False)
 
