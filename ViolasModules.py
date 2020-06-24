@@ -46,4 +46,4 @@ class ViolasAddressInfo(Base):
     sent_failed_tx_count = Column(BigInteger, nullable = False)
     received_failed_tx_count = Column(BigInteger, nullable = False)
 
-Index("address_index", ViolasAddressInfo.address)
+Index("address_info_index", ViolasAddressInfo.address)

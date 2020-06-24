@@ -46,4 +46,4 @@ class LibraAddressInfo(Base):
     sent_failed_tx_count = Column(BigInteger, nullable = False)
     received_failed_tx_count = Column(BigInteger, nullable = False)
 
-Index("address_index", LibraAddressInfo.address)
+Index("address_info_index", LibraAddressInfo.address)
