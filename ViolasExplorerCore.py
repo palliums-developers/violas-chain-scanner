@@ -94,8 +94,8 @@ while True:
         logging.debug(f"Paser result: {data}")
 
         if data["transaction_type"] == "UserTransaction":
-            HLibra.HandleSenderAddressInfo(data)
-            HLibra.HandleReceiverAddressInfo(data)
+            HViolas.HandleSenderAddressInfo(data)
+            HViolas.HandleReceiverAddressInfo(data)
 
         datas.append(data)
 
