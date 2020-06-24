@@ -82,6 +82,7 @@ class ViolasPGHandler():
                 sender = i.get("sender"),
                 receiver = i.get("receiver"),
                 currency = i.get("currency"),
+                gas_currency = i.get("gas_currency"),
                 amount = i.get("amount"),
                 gas_used = i.get("gas_used"),
                 gas_unit_price = i.get("gas_unit_price"),
@@ -154,7 +155,7 @@ class ViolasPGHandler():
     def HandleReceiverAddressInfo(self, data):
         s = self.session()
 
-        if data["transaction_type"] == "mint" or data["transaction_type"] == "violas_mint":
+        if data["transaction_type"] == "MINT" or data["transaction_type"] == "MINT_LBR":
             received_minted_tx_count = 1
         else:
             received_minted_tx_count = 0

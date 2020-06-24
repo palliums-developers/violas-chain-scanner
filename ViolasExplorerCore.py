@@ -93,10 +93,9 @@ while True:
 
         logging.debug(f"Paser result: {data}")
 
-        HViolas.HandleSenderAddressInfo(data)
-
-        if "receiver" in data and data["receiver"] is not None:
-            HViolas.HandleReceiverAddressInfo(data)
+        if data["transaction_type"] == "UserTransaction":
+            HLibra.HandleSenderAddressInfo(data)
+            HLibra.HandleReceiverAddressInfo(data)
 
         datas.append(data)
 
