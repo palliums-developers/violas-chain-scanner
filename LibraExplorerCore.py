@@ -65,9 +65,9 @@ while True:
                 data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
                 data["address_type"] = 2
             elif transactionType == "BlockMetadata":
-                data["sequence_number"] = txInfo.get_events()[0].get_sequence_number()
-                data["sender"] = txInfo.get_events()[0].get_data().value.proposer
-                data["expiration_time"] = int(txInfo.transaction.value.get_timestamp_usecs() / 1000000)
+                data["sequence_number"] = txInfo.get_events()[0].sequence_number
+                data["sender"] = txInfo.get_events()[0].data.value.proposer
+                data["expiration_time"] = int(txInfo.transaction.value.get_timestamp_usecs())
                 data["amount"] = 0
                 data["max_gas_amount"] = 0
                 data["gas_unit_price"] = 0
