@@ -4,6 +4,7 @@ from time import sleep
 
 from violas_client import Client
 from ViolasPGHandler import ViolasPGHandler
+from violas_client.lbrtypes.account_config.constants.lbr import CORE_CODE_ADDRESS
 
 logging.basicConfig(filename = "ViolasLog.out", level = logging.WARNING)
 
@@ -14,6 +15,7 @@ violasDBInfo = config["VIOLAS DB INFO"]
 violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
 HViolas = ViolasPGHandler(violasDBUrl)
 cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
+cli.set_exchange_module_address(CORE_CODE_ADDRESS)
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
@@ -31,6 +33,7 @@ while True:
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
         cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
+        cli.set_exchange_module_address(CORE_CODE_ADDRESS)
         continue
 
     if len(txInfos) == 0:
