@@ -63,7 +63,8 @@ class ViolasPGHandler():
             state_root_hash = data.get("state_root_hash"),
             event_root_hash = data.get("event_root_hash"),
             gas_used = data.get("gas_used"),
-            status = data.get("status")
+            status = data.get("status"),
+            event = i.get("event")
         )
         s = self.session()
 
@@ -94,7 +95,8 @@ class ViolasPGHandler():
                 script_hash = i.get("script_hash"),
                 signature = i.get("signature"),
                 signature_scheme = i.get("signature_scheme"),
-                status = i.get("status")
+                status = i.get("status"),
+                event = i.get("event")
             )
 
             transactions.append(tran)

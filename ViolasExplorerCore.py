@@ -5,6 +5,7 @@ from time import sleep
 from violas_client import Client
 from ViolasPGHandler import ViolasPGHandler
 from violas_client.lbrtypes.account_config.constants.lbr import CORE_CODE_ADDRESS
+from violas_client.lbrtypes.account_config import association_address
 
 logging.basicConfig(filename = "ViolasLog.out", level = logging.WARNING)
 
@@ -16,6 +17,7 @@ violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInf
 HViolas = ViolasPGHandler(violasDBUrl)
 cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
 cli.set_exchange_module_address(CORE_CODE_ADDRESS)
+cli.set_exchange_owner_address(association_address())
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
@@ -34,6 +36,7 @@ while True:
         logging.error(f"Get transaction failed: {e}")
         cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
         cli.set_exchange_module_address(CORE_CODE_ADDRESS)
+        cli.set_exchange_owner_address(association_address())
         continue
 
     if len(txInfos) == 0:
@@ -68,6 +71,8 @@ while True:
                 data["data_signature"] = txInfo.get_data() if txInfo.get_data() is not None and len(txInfo.get_data()) != 0 else None
                 data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
                 data["address_type"] = 2
+                if txInfo.get_code_type().name == "SWAP" or txInfo.get_code_type().name == "REMOVE_LIQUIDITY" or txInfo.get_code_type().name == "ADD_LIQUIDITY":
+                    data["event"] = txInfo.get_swap_event().to_json()
             elif transactionType == "BlockMetadata":
                 data["sequence_number"] = txInfo.get_events()[0].sequence_number
                 data["sender"] = txInfo.get_events()[0].data.value.proposer
