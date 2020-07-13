@@ -72,7 +72,7 @@ while True:
                 data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
                 data["address_type"] = 2
                 if txInfo.get_code_type().name == "SWAP" or txInfo.get_code_type().name == "REMOVE_LIQUIDITY" or txInfo.get_code_type().name == "ADD_LIQUIDITY":
-                    data["event"] = txInfo.get_swap_event().to_json()
+                    data["event"] = txInfo.get_swap_event().to_json() if txInfo.get_swap_event() is not None else None
             elif transactionType == "BlockMetadata":
                 data["sequence_number"] = txInfo.get_events()[0].sequence_number
                 data["sender"] = txInfo.get_events()[0].data.value.proposer
