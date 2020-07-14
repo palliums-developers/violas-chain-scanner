@@ -35,8 +35,6 @@ while True:
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
         cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
-        cli.set_exchange_module_address(CORE_CODE_ADDRESS)
-        cli.set_exchange_owner_address(association_address())
         continue
 
     if len(txInfos) == 0:
