@@ -92,7 +92,7 @@ while True:
 
         logging.debug(f"Paser result: {data}")
 
-        if data["transaction_type"] == "UserTransaction":
+        if transactionType == "UserTransaction":
             HLibra.HandleSenderAddressInfo(data)
             HLibra.HandleReceiverAddressInfo(data)
 

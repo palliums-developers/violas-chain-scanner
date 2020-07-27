@@ -99,7 +99,7 @@ while True:
 
         logging.debug(f"Paser result: {data}")
 
-        if data["transaction_type"] == "UserTransaction":
+        if transactionType == "UserTransaction":
             HViolas.HandleSenderAddressInfo(data)
             HViolas.HandleReceiverAddressInfo(data)
 
