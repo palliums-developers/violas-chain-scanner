@@ -34,7 +34,7 @@ class LibraAddressInfo(Base):
     __tablename__ = "address_info"
 
     id = Column(BigInteger, primary_key = True, autoincrement = True)
-    address = Column(String(64), nullable = False)
+    address = Column(String(64), nullable = True)
     type = Column(SmallInteger, nullable = False) # 0: Minter, 1: proposer, 2: Normal
     first_seen = Column(BigInteger, nullable = False)
     received_amount = Column(Numeric, nullable = False)
