@@ -84,7 +84,7 @@ while True:
                 data["address_type"] = 0
 
             data["gas_used"] = txInfo.get_gas_used()
-            data["status"] = txInfo.get_vm_status()
+            data["status"] = txInfo.get_vm_status().enum_name
 
         except Exception as e:
             logging.error(f"Parse txInfo failed: {e}")
@@ -94,7 +94,8 @@ while True:
 
         if transactionType == "UserTransaction":
             HLibra.HandleSenderAddressInfo(data)
-            HLibra.HandleReceiverAddressInfo(data)
+            if data["receiver"] is not None:
+                HLibra.HandleReceiverAddressInfo(data)
 
         datas.append(data)
 

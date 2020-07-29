@@ -101,7 +101,8 @@ while True:
 
         if transactionType == "UserTransaction":
             HViolas.HandleSenderAddressInfo(data)
-            HViolas.HandleReceiverAddressInfo(data)
+            if data["receiver"] is not None:
+                HViolas.HandleReceiverAddressInfo(data)
 
         datas.append(data)
 

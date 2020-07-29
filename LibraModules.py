@@ -23,7 +23,7 @@ class LibraTransaction(Base):
     script_hash = Column(String(64), nullable = True)
     signature = Column(Text(), nullable = True)
     signature_scheme = Column(String(32), nullable = True)
-    status = Column(SmallInteger, nullable = False)
+    status = Column(String(32), nullable = False)
 
 Index("address_index", LibraTransaction.sender, LibraTransaction.receiver)
 Index("sender_index", LibraTransaction.sender)
