@@ -56,7 +56,7 @@ while True:
                 data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
                 data["max_gas_amount"] = txInfo.transaction.value.get_max_gas_amount()
                 data["gas_unit_price"] = txInfo.transaction.value.get_gas_unit_price()
-                data["expiration_time"] = txInfo.get_expiration_time() if (txInfo.get_expiration_time() % 9999999999) == txInfo.get_expiration_time() else None
+                data["expiration_time"] = txInfo.get_expiration_time()
                 data["public_key"] = txInfo.transaction.value.get_public_key()
                 data["script_hash"] = txInfo.transaction.value.get_script_hash()
                 data["signature"] = txInfo.transaction.value.get_signature()

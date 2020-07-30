@@ -16,7 +16,7 @@ class LibraTransaction(Base):
     gas_used = Column(Numeric, nullable = False)
     gas_unit_price = Column(Numeric, nullable = False)
     max_gas_amount = Column(Numeric, nullable = False)
-    expiration_time = Column(Integer, nullable = False)
+    expiration_time = Column(BigInteger, nullable = False)
     transaction_type = Column(String(64), nullable = False)
     data = Column(Text(), nullable = True)
     public_key = Column(Text(), nullable = True)
