@@ -44,21 +44,23 @@ class LibraPGHandler():
         s = self.session()
 
         tran = LibraTransaction(
-            sender = data.get("sender"),
-            sequence_number = data.get("sequence_number"),
-            max_gas_amount = data.get("max_gas_amount"),
-            gas_unit_price = data.get("gas_unit_price"),
-            expiration_time = data.get("expiration_time"),
-            transaction_type = data.get("transaction_type"),
-            receiver = data.get("receiver"),
-            amount = data.get("amount"),
-            public_key = data.get("public_key"),
-            signature = data.get("signature"),
-            transaction_hash = data.get("transaction_hash"),
-            state_root_hash = data.get("state_root_hash"),
-            event_root_hash = data.get("event_root_hash"),
-            gas_used = data.get("gas_used"),
-            status = data.get("status")
+            sequence_number=data.get("sequence_number"),
+            sender=data.get("sender"),
+            receiver=data.get("receiver"),
+            currency=data.get("currency"),
+            gas_currency=data.get("gas_currency"),
+            amount=data.get("amount"),
+            gas_used=data.get("gas_used"),
+            gas_unit_price=data.get("gas_unit_price"),
+            max_gas_amount=data.get("max_gas_amount"),
+            expiration_time=data.get("expiration_time"),
+            transaction_type=data.get("transaction_type"),
+            data=data.get("data"),
+            public_key=data.get("public_key"),
+            script_hash=data.get("script_hash"),
+            signature=data.get("signature"),
+            signature_scheme=data.get("signature_scheme"),
+            status=data.get("status")
         )
 
         s.add(tran)

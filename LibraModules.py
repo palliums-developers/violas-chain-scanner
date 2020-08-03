@@ -6,7 +6,7 @@ Base = declarative_base()
 class LibraTransaction(Base):
     __tablename__ = "transactions"
 
-    id = Column(BigInteger, primary_key = True, autoincrement = True)
+    id = Column(BigInteger, primary_key = True)
     sequence_number = Column(Integer, nullable = False)
     sender = Column(String(64), nullable = False)
     receiver = Column(String(64), nullable = True)
