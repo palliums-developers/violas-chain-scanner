@@ -86,6 +86,8 @@ while True:
                     if txInfos[next_index].get_code_type() == CodeType.BLOCK_METADATA:
                         data["confirmed_time"] = txInfos[next_index].get_expiration_time()
                         break
+                    next_index = next_index + 1
+
             elif transactionType == "BlockMetadata":
                 data["sequence_number"] = txInfo.get_events()[0].sequence_number
                 data["sender"] = txInfo.get_events()[0].data.value.proposer
@@ -120,5 +122,4 @@ while True:
                 HLibra.HandleReceiverAddressInfo(data)
 
         datas.append(data)
-
     HLibra.InsertTransactions(datas)
