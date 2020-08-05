@@ -61,7 +61,7 @@ class LibraPGHandler():
             signature=data.get("signature"),
             signature_scheme=data.get("signature_scheme"),
             status=data.get("status"),
-            confirmed_time=i.get("confirmed_time")
+            confirmed_time=data.get("confirmed_time")
         )
 
         s.add(tran)
