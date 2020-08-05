@@ -46,13 +46,12 @@ while True:
         while True:
             ltx = txInfos[-1]
             if ltx.get_code_type() != CodeType.BLOCK_METADATA:
+                sleep(1 / 1000 * 500)
                 tx = cli.get_transaction(ltx.get_version()+1)
                 if tx is not None:
                     txInfos.append(tx)
-                    if tx.get_code_type() == CodeType.BLOCK_METADATA:
-                        break
-                sleep(1 / 1000 * 500)
-
+                continue
+            break
     except Exception as e:
         logging.error(f"Get transaction failed: {e}")
         cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
