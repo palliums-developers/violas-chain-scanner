@@ -60,7 +60,8 @@ class LibraPGHandler():
             script_hash=data.get("script_hash"),
             signature=data.get("signature"),
             signature_scheme=data.get("signature_scheme"),
-            status=data.get("status")
+            status=data.get("status"),
+            confirmed_time=i.get("confirmed_time")
         )
 
         s.add(tran)
@@ -90,7 +91,8 @@ class LibraPGHandler():
                 script_hash = i.get("script_hash"),
                 signature = i.get("signature"),
                 signature_scheme = i.get("signature_scheme"),
-                status = i.get("status")
+                status = i.get("status"),
+                confirmed_time = i.get("confirmed_time")
             )
 
             transactions.append(tran)

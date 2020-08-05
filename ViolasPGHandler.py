@@ -64,7 +64,9 @@ class ViolasPGHandler():
             signature=data.get("signature"),
             signature_scheme=data.get("signature_scheme"),
             status=data.get("status"),
-            event=data.get("event")
+            event=data.get("event"),
+            confirmed_time=data.get("confirmed_time")
+
         )
         s = self.session()
 
@@ -96,7 +98,8 @@ class ViolasPGHandler():
                 signature = i.get("signature"),
                 signature_scheme = i.get("signature_scheme"),
                 status = i.get("status"),
-                event = i.get("event")
+                event = i.get("event"),
+                confirmed_time = i.get("confirmed_time")
             )
 
             transactions.append(tran)
