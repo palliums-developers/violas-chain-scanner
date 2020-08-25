@@ -4,6 +4,7 @@ from time import sleep
 
 from libra_client import Client
 from LibraPGHandler import LibraPGHandler
+from libra_client.lbrtypes.bytecode import CodeType
 
 logging.basicConfig(filename = "LibraLog.out", level = logging.WARNING)
 
@@ -17,7 +18,6 @@ cli = Client("libra_testnet")
 
 while True:
     succ, nextID = HLibra.GetTransactionCount()
-
     if not succ:
         logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")
         sleep(1 / 1000 * 500)
@@ -37,8 +37,23 @@ while True:
         sleep(1 / 1000 * 500)
         continue
 
+    try:
+        while True:
+            ltx = txInfos[-1]
+            if ltx.get_code_type() != CodeType.BLOCK_METADATA:
+                sleep(1 / 1000 * 500)
+                tx = cli.get_transaction(ltx.get_version()+1)
+                if tx is not None:
+                    txInfos.append(tx)
+                continue
+            break
+
+    except Exception as e:
+        logging.error(f"Get transaction failed: {e}")
+        cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
+        continue
     datas = []
-    for txInfo in txInfos:
+    for index, txInfo in enumerate(txInfos):
         logging.debug(f"Get transaction info: {txInfo}")
         transactionType = txInfo.transaction.enum_name
         logging.debug(f"Transaction type is {transactionType}")
@@ -64,6 +79,13 @@ while True:
                 data["data"] = txInfo.get_data() if txInfo.get_data() is not None and len(txInfo.get_data()) != 0 else None
                 data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
                 data["address_type"] = 2
+                next_index = index + 1
+                while True:
+                    if txInfos[next_index].get_code_type() == CodeType.BLOCK_METADATA:
+                        data["confirmed_time"] = txInfos[next_index].get_expiration_time()
+                        break
+                    next_index = next_index + 1
+
             elif transactionType == "BlockMetadata":
                 data["sequence_number"] = txInfo.get_events()[0].sequence_number
                 data["sender"] = txInfo.get_events()[0].data.value.proposer
@@ -98,5 +120,4 @@ while True:
                 HLibra.HandleReceiverAddressInfo(data)
 
         datas.append(data)
-
     HLibra.InsertTransactions(datas)

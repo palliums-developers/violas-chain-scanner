@@ -6,6 +6,7 @@ from violas_client import Client
 from ViolasPGHandler import ViolasPGHandler
 from violas_client.lbrtypes.account_config.constants.lbr import CORE_CODE_ADDRESS
 from violas_client.lbrtypes.account_config import association_address
+from violas_client.lbrtypes.bytecode import CodeType
 
 logging.basicConfig(filename = "ViolasLog.out", level = logging.WARNING)
 
@@ -41,8 +42,23 @@ while True:
         sleep(1 / 1000 * 500)
         continue
 
+    try:
+        while True:
+            ltx = txInfos[-1]
+            if ltx.get_code_type() != CodeType.BLOCK_METADATA:
+                sleep(1 / 1000 * 500)
+                tx = cli.get_transaction(ltx.get_version()+1)
+                if tx is not None:
+                    txInfos.append(tx)
+                continue
+            break
+    except Exception as e:
+        logging.error(f"Get transaction failed: {e}")
+        cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
+        continue
+
     datas = []
-    for txInfo in txInfos:
+    for index, txInfo in enumerate(txInfos):
         logging.debug(f"Get transaction info: {txInfo}")
         transactionType = txInfo.transaction.enum_name
         logging.debug(f"Transaction type is {transactionType}")
@@ -60,7 +76,7 @@ while True:
                 data["amount"] = txInfo.get_amount() if txInfo.get_amount() is not None else 0
                 data["max_gas_amount"] = txInfo.transaction.value.get_max_gas_amount()
                 data["gas_unit_price"] = txInfo.transaction.value.get_gas_unit_price()
-                data["expiration_time"] = txInfo.get_expiration_time()
+                data["expiration_time"] = txInfo.get_expiration_time() if (txInfo.get_expiration_time() % 9999999999) == txInfo.get_expiration_time() else None
                 data["public_key"] = txInfo.transaction.value.get_public_key()
                 data["script_hash"] = txInfo.transaction.value.get_script_hash()
                 data["signature"] = txInfo.transaction.value.get_signature()
@@ -71,6 +87,13 @@ while True:
                 data["address_type"] = 2
                 if txInfo.get_code_type().name == "SWAP" or txInfo.get_code_type().name == "REMOVE_LIQUIDITY" or txInfo.get_code_type().name == "ADD_LIQUIDITY":
                     data["event"] = txInfo.get_swap_event().to_json() if txInfo.get_swap_event() is not None else None
+                next_index = index+1
+                while True:
+                    if txInfos[next_index].get_code_type() == CodeType.BLOCK_METADATA:
+                        data["confirmed_time"] = txInfos[next_index].get_expiration_time()
+                        break
+                    next_index = next_index + 1
+
             elif transactionType == "BlockMetadata":
                 data["sequence_number"] = txInfo.get_events()[0].sequence_number
                 data["sender"] = txInfo.get_events()[0].data.value.proposer
