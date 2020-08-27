@@ -114,7 +114,7 @@ while True:
                 data["address_type"] = 0
 
             data["gas_used"] = txInfo.get_gas_used()
-            data["status"] = txInfo.get_vm_status()
+            data["status"] = txInfo.get_vm_status().enum_name
 
         except Exception as e:
             logging.error(f"Final result: {e}")
