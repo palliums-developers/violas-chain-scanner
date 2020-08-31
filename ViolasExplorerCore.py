@@ -20,6 +20,10 @@ cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
 cli.set_exchange_module_address(CORE_CODE_ADDRESS)
 cli.set_exchange_owner_address(association_address())
 
+bank_module_address = "da13aace1aa1c49e497416a9dd062ecb"
+cli.set_bank_module_address(CORE_CODE_ADDRESS)
+cli.set_bank_owner_address(bank_module_address)
+
 while True:
     succ, nextID = HViolas.GetTransactionCount()
 
