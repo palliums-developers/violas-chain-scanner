@@ -16,16 +16,18 @@ config.read("./config.ini")
 violasDBInfo = config["VIOLAS DB INFO"]
 violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInfo['USERNAME']}:{violasDBInfo['PASSWORD']}@{violasDBInfo['HOSTNAME']}:{violasDBInfo['PORT']}/{violasDBInfo['DATABASE']}"
 HViolas = ViolasPGHandler(violasDBUrl)
-cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
-cli.set_exchange_module_address(CORE_CODE_ADDRESS)
-cli.set_exchange_owner_address(association_address())
 
-bank_module_address = "da13aace1aa1c49e497416a9dd062ecb"
+cli = Client.new(config['NODE INFO']['VIOLAS_HOST'])
+
+cli.set_exchange_module_address(CORE_CODE_ADDRESS)
+cli.set_exchange_owner_address(config["NODE INFO"]["EXCHANGE_MODULE_ADDRESS"])
+
 cli.set_bank_module_address(CORE_CODE_ADDRESS)
-cli.set_bank_owner_address(bank_module_address)
+cli.set_bank_owner_address(config["NODE INFO"]["BANK_MODULE_ADDRESS"])
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
+    nextID = 30703
 
     if not succ:
         logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")

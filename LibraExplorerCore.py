@@ -14,7 +14,8 @@ config.read("./config.ini")
 libraDBInfo = config["LIBRA DB INFO"]
 libraDBUrl = f"{libraDBInfo['DBTYPE']}+{libraDBInfo['DRIVER']}://{libraDBInfo['USERNAME']}:{libraDBInfo['PASSWORD']}@{libraDBInfo['HOSTNAME']}:{libraDBInfo['PORT']}/{libraDBInfo['DATABASE']}"
 HLibra = LibraPGHandler(libraDBUrl)
-cli = Client("libra_testnet")
+
+cli = Client(config["NODE INFO"]["LIBRA_HOST"])
 
 while True:
     succ, nextID = HLibra.GetTransactionCount()
