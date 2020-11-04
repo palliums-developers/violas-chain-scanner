@@ -27,7 +27,6 @@ cli.set_bank_owner_address(config["NODE INFO"]["BANK_MODULE_ADDRESS"])
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
-    nextID = 30703
 
     if not succ:
         logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")
