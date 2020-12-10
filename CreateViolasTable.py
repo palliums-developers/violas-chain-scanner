@@ -11,5 +11,10 @@ violasDBUrl = f"{violasDBInfo['DBTYPE']}+{violasDBInfo['DRIVER']}://{violasDBInf
 
 engine = create_engine(violasDBUrl)
 
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+Base.metadata.tables["transactions"].drop(engine)
+Base.metadata.tables["address_info"].drop(engine)
+Base.metadata.tables["incentive_issue_record"].drop(engine)
+
+Base.metadata.tables["transactions"].create(engine)
+Base.metadata.tables["address_info"].create(engine)
+Base.metadata.tables["incentive_issue_record"].create(engine)

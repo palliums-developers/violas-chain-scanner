@@ -27,7 +27,6 @@ cli.set_bank_owner_address(config["NODE INFO"]["BANK_MODULE_ADDRESS"])
 
 while True:
     succ, nextID = HViolas.GetTransactionCount()
-
     if not succ:
         logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")
         sleep(1 / 1000 * 500)
@@ -63,11 +62,13 @@ while True:
         continue
 
     datas = []
+    incentives = []
     for index, txInfo in enumerate(txInfos):
         logging.debug(f"Get transaction info: {txInfo}")
         transactionType = txInfo.transaction.enum_name
         logging.debug(f"Transaction type is {transactionType}")
 
+        incentive = None
         data = {}
         data["version"] = txInfo.get_version()
 
@@ -89,8 +90,34 @@ while True:
                 data["data"] = txInfo.get_data() if txInfo.get_data() is not None and len(txInfo.get_data()) != 0 else None
                 data["data_signature"] = txInfo.get_data() if txInfo.get_data() is not None and len(txInfo.get_data()) != 0 else None
                 data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
+
+                if data["transaction_type"] in ["LOCK2", "REDEEM2"]:
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 3
+                    }
+                elif data["transaction_type"] in ["BORROW2", "REPAY_BORROW2"]:
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 4
+                    }
+                elif data["transaction_type"] == "CLAIM_INCENTIVE":
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 5
+                    }
+
                 data["address_type"] = 2
-                if txInfo.get_code_type().name == "SWAP" or txInfo.get_code_type().name == "REMOVE_LIQUIDITY" or txInfo.get_code_type().name == "ADD_LIQUIDITY":
+                if txInfo.get_code_type().name in ["SWAP", "REMOVE_LIQUIDITY", "ADD_LIQUIDITY"]:
                     data["event"] = txInfo.get_swap_event().to_json() if txInfo.get_swap_event() is not None else None
                 next_index = index+1
                 while True:
@@ -133,5 +160,8 @@ while True:
                 HViolas.HandleReceiverAddressInfo(data)
 
         datas.append(data)
+        if incentive is not None and incentive.get("amount") != 0:
+            incentives.append(incentive)
 
     HViolas.InsertTransactions(datas)
+    HViolas.InsertIncentives(incentives)

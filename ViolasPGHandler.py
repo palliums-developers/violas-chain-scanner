@@ -1,7 +1,7 @@
 import logging
 from time import sleep
 
-from ViolasModules import ViolasAddressInfo, ViolasTransaction
+from ViolasModules import ViolasAddressInfo, ViolasTransaction, ViolasIncentiveIssueRecord
 
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
@@ -82,8 +82,8 @@ class ViolasPGHandler():
         for i in data:
             tran = ViolasTransaction(
                 sequence_number = i.get("sequence_number"),
-                sender = i.get("sender"),
-                receiver = i.get("receiver"),
+                sender = i.get("sender").lower(),
+                receiver = i.get("receiver").lower() if i.get("receiver") is not None else None,
                 currency = i.get("currency"),
                 gas_currency = i.get("gas_currency"),
                 amount = i.get("amount"),
@@ -133,7 +133,7 @@ class ViolasPGHandler():
 
         if result is None:
             info = ViolasAddressInfo(
-                address = data["sender"],
+                address = data["sender"].lower(),
                 type = data["address_type"],
                 first_seen = data["version"],
                 sent_amount = sent_amount,
@@ -181,7 +181,7 @@ class ViolasPGHandler():
 
         if result is None:
             info = ViolasAddressInfo(
-                address = data["receiver"],
+                address = data["receiver"].lower(),
                 type = data["address_type"],
                 first_seen = data["version"],
                 received_amount = received_amount,
@@ -221,3 +221,22 @@ class ViolasPGHandler():
         except OperationalError:
             s.close()
             return False, None
+
+    def InsertIncentives(self, infos):
+        s = self.session()
+
+        records = []
+        for i in infos:
+            record = ViolasIncentiveIssueRecord(
+                address = i.get("address").lower(),
+                amount = i.get("amount"),
+                date = i.get("date"),
+                status = i.get("status"),
+                type = i.get("type")
+            )
+            records.append(record)
+
+        s.add_all(records)
+        self.Commit(s)
+
+        return True
