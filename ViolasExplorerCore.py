@@ -91,7 +91,7 @@ while True:
                 data["data_signature"] = txInfo.get_data() if txInfo.get_data() is not None and len(txInfo.get_data()) != 0 else None
                 data["transaction_type"] = txInfo.get_code_type().name if txInfo.get_code_type() is not None else ""
 
-                if data["transaction_type"] in ["LOCK2", "REDEEM2"]:
+                if data["transaction_type"] == "LOCK2":
                     incentive = {
                         "address": data["sender"],
                         "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
@@ -99,7 +99,7 @@ while True:
                         "status": 1,
                         "type": 3
                     }
-                elif data["transaction_type"] in ["BORROW2", "REPAY_BORROW2"]:
+                elif  data["transaction_type"] == "REDEEM2":
                     incentive = {
                         "address": data["sender"],
                         "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
@@ -107,7 +107,7 @@ while True:
                         "status": 1,
                         "type": 4
                     }
-                elif data["transaction_type"] == "CLAIM_INCENTIVE":
+                elif data["transaction_type"] == "BORROW2":
                     incentive = {
                         "address": data["sender"],
                         "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
@@ -115,8 +115,25 @@ while True:
                         "status": 1,
                         "type": 5
                     }
+                elif data["transaction_type"] ==  "REPAY_BORROW2":
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 6
+                    }
+                elif data["transaction_type"] == "CLAIM_INCENTIVE":
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 7
+                    }
 
                 data["address_type"] = 2
+
                 if txInfo.get_code_type().name in ["SWAP", "REMOVE_LIQUIDITY", "ADD_LIQUIDITY"]:
                     data["event"] = txInfo.get_swap_event().to_json() if txInfo.get_swap_event() is not None else None
                 next_index = index+1
