@@ -99,7 +99,7 @@ while True:
                         "status": 1,
                         "type": 3
                     }
-                elif  data["transaction_type"] == "REDEEM2":
+                elif data["transaction_type"] == "REDEEM2":
                     incentive = {
                         "address": data["sender"],
                         "amount": txInfo.get_incentive() if txInfo.get_incentive() is not None else 0,
@@ -131,7 +131,7 @@ while True:
                         "status": 1,
                         "type": 7
                     }
-                elif data["trnasaction_type"] == "ADD_LIQUIDITY":
+                elif data["transaction_type"] == "ADD_LIQUIDITY":
                     incentive = {
                         "address": data["sender"],
                         "amount": txInfo.get_swap_reward_amount() if txInfo.get_swap_reward_amount() is not None else 0,
