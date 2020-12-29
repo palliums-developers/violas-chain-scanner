@@ -131,6 +131,30 @@ while True:
                         "status": 1,
                         "type": 7
                     }
+                elif data["trnasaction_type"] == "ADD_LIQUIDITY":
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_swap_reward_amount() if txInfo.get_swap_reward_amount() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 8
+                    }
+                elif data["transaction_type"] == "REMOVE_LIQUIDITY":
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_swap_reward_amount() if txInfo.get_swap_reward_amount() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 9
+                    }
+                elif data["transaction_type"] == "WITHDRAW_MINE_REWARD":
+                    incentive = {
+                        "address": data["sender"],
+                        "amount": txInfo.get_swap_reward_amount() if txInfo.get_swap_reward_amount() is not None else 0,
+                        "date": data["expiration_time"],
+                        "status": 1,
+                        "type": 10
+                    }
 
                 data["address_type"] = 2
 
