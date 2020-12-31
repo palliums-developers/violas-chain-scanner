@@ -159,7 +159,8 @@ while True:
                 data["address_type"] = 2
 
                 if txInfo.get_code_type().name in ["SWAP", "REMOVE_LIQUIDITY", "ADD_LIQUIDITY"]:
-                    data["event"] = txInfo.get_swap_type_events(txInfo.get_code_type())[0].get_swap_event().to_json() if txInfo.get_swap_type_events(txInfo.get_code_type()) is not None else None
+                    if len(txInfo.get_swap_type_events(txInfo.get_code_type())) > 0:
+                        data["event"] = txInfo.get_swap_type_events(txInfo.get_code_type())[0].get_swap_event().to_json() if txInfo.get_swap_type_events(txInfo.get_code_type()) is not None else None
 
                 next_index = index+1
                 while True:
