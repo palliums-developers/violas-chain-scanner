@@ -27,11 +27,6 @@ class ViolasTransaction(Base):
     event = Column(Text(), nullable = True)
     confirmed_time = Column(BigInteger, nullable = True)
 
-Index("address_index", ViolasTransaction.sender, ViolasTransaction.receiver)
-Index("sender_index", ViolasTransaction.sender)
-Index("receiver_index", ViolasTransaction.receiver)
-Index("currency_index", ViolasTransaction.currency)
-
 class ViolasAddressInfo(Base):
     __tablename__ = "address_info"
 
@@ -47,8 +42,6 @@ class ViolasAddressInfo(Base):
     received_minted_tx_count = Column(BigInteger, nullable = True)
     sent_failed_tx_count = Column(BigInteger, nullable = True)
     received_failed_tx_count = Column(BigInteger, nullable = True)
-
-Index("address_info_index", ViolasAddressInfo.address)
 
 class ViolasIncentiveIssueRecord(Base):
     __tablename__ = "incentive_issue_record"

@@ -26,11 +26,6 @@ class LibraTransaction(Base):
     status = Column(String(32), nullable = True)
     confirmed_time = Column(BigInteger, nullable = True)
 
-Index("address_index", LibraTransaction.sender, LibraTransaction.receiver)
-Index("sender_index", LibraTransaction.sender)
-Index("receiver_index", LibraTransaction.receiver)
-Index("currency_index", LibraTransaction.currency)
-
 class LibraAddressInfo(Base):
     __tablename__ = "address_info"
 
@@ -46,5 +41,3 @@ class LibraAddressInfo(Base):
     received_minted_tx_count = Column(BigInteger, nullable = True)
     sent_failed_tx_count = Column(BigInteger, nullable = True)
     received_failed_tx_count = Column(BigInteger, nullable = True)
-
-Index("address_info_index", LibraAddressInfo.address)
