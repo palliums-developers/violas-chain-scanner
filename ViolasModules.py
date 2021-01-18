@@ -50,7 +50,6 @@ class ViolasAddressInfo(Base):
 
 Index("address_info_index", ViolasAddressInfo.address)
 
-
 class ViolasIncentiveIssueRecord(Base):
     __tablename__ = "incentive_issue_record"
 

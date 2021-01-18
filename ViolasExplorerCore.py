@@ -1,6 +1,7 @@
 import logging
 import configparser
 from time import sleep
+import requests
 
 from violas_client import Client
 from ViolasPGHandler import ViolasPGHandler
@@ -205,6 +206,12 @@ while True:
         datas.append(data)
         if incentive is not None and incentive.get("amount") != 0:
             incentives.append(incentive)
+
+        if data["transaction_type"] in ["PEER_TO_PEER_WITH_METADATA"]:
+            resp = requests.post(
+                "http://127.0.0.1:4006/violas/push/message",
+                json = {"version":data["version"]}
+            )
 
     HViolas.InsertTransactions(datas)
     HViolas.InsertIncentives(incentives)

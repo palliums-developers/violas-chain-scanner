@@ -19,6 +19,7 @@ cli = Client(config["NODE INFO"]["LIBRA_HOST"])
 
 while True:
     succ, nextID = HLibra.GetTransactionCount()
+
     if not succ:
         logging.error(f"ERROR: Get count of transactions failed, retry after 500ms.")
         sleep(1 / 1000 * 500)
@@ -42,10 +43,11 @@ while True:
         while True:
             ltx = txInfos[-1]
             if ltx.get_code_type() != CodeType.BLOCK_METADATA:
-                sleep(1 / 1000 * 500)
+                sleep(1 / 1000)
                 tx = cli.get_transaction(ltx.get_version()+1)
                 if tx is not None:
                     txInfos.append(tx)
+
                 continue
             break
 
