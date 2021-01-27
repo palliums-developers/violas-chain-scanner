@@ -1,8 +1,8 @@
 #!/bin/bash
 
-sudo docker stop violas-scan
-sudo docker rm violas-scan
-sudo docker image rm violas-scan
-sed -i "s/LibraExplorerCore/ViolasExplorerCore/g" Dockerfile
-sudo docker image build --no-cache -t violas-scan .
-sudo docker run --name=violas-scan --network=host -d violas-scan
+sudo docker stop violas-scanner
+sudo docker rm violas-scanner
+sudo docker image rm violas-scanner
+sed -i "s/LibraChainScanner/ViolasChainScanner/g" Dockerfile
+sudo docker image build --no-cache -t violas-scanner .
+sudo docker run --name=violas-scanner --network=host -d violas-scanner

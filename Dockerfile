@@ -9,11 +9,11 @@ RUN git clone -b v0.30 https://Xing-Huang:13583744689edc@github.com/palliums-dev
 RUN git clone -b v0.30 https://Xing-Huang:13583744689edc@github.com/palliums-developers/violas-client.git violas-client
 RUN pip3 install -r /libra-client/requirements.txt
 
-COPY . /explorer-core
-RUN pip3 install -r /explorer-core/requirements.txt
+COPY . /violas-chain-scanner
+RUN pip3 install -r /violas-chain-scanner/requirements.txt
 
-WORKDIR /explorer-core
+WORKDIR /violas-chain-scanner
 RUN cp -rf ../libra-client/libra_client .
 RUN cp -rf ../violas-client/violas_client .
 
-CMD ["python3", "LibraExplorerCore.py"]
+CMD ["python3", "LibraChainScanner.py"]
