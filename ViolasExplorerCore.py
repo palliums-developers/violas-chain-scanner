@@ -207,11 +207,11 @@ while True:
         if incentive is not None and incentive.get("amount") != 0:
             incentives.append(incentive)
 
-        if data["transaction_type"] in ["PEER_TO_PEER_WITH_METADATA"]:
-            resp = requests.post(
-                "http://127.0.0.1:4006/violas/push/message",
-                json = {"version":data["version"]}
-            )
+        # if data["transaction_type"] in ["PEER_TO_PEER_WITH_METADATA"]:
+        #     resp = requests.post(
+        #         "http://127.0.0.1:4006/violas/push/message",
+        #         json = {"version":data["version"]}
+        #     )
 
     HViolas.InsertTransactions(datas)
     HViolas.InsertIncentives(incentives)
