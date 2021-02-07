@@ -212,7 +212,7 @@ while True:
                 resp = requests.post(
                     "http://127.0.0.1:4006/violas/push/message",
                     json = {
-                        "service": "service_01",
+                        "service": "violas_01",
                         "version":data["version"]
                     }
                 )
