@@ -47,26 +47,13 @@ class ViolasPGHandler():
 
     def InsertTransaction(self, data):
         tran = ViolasTransaction(
+            version = i.get("version"),
             sequence_number=data.get("sequence_number"),
             sender=data.get("sender"),
             receiver=data.get("receiver"),
             currency=data.get("currency"),
-            gas_currency=data.get("gas_currency"),
-            amount=data.get("amount"),
-            gas_used=data.get("gas_used"),
-            gas_unit_price=data.get("gas_unit_price"),
-            max_gas_amount=data.get("max_gas_amount"),
-            expiration_time=data.get("expiration_time"),
             transaction_type=data.get("transaction_type"),
-            data=data.get("data"),
-            public_key=data.get("public_key"),
-            script_hash=data.get("script_hash"),
-            signature=data.get("signature"),
-            signature_scheme=data.get("signature_scheme"),
-            status=data.get("status"),
-            event=data.get("event"),
-            confirmed_time=data.get("confirmed_time")
-
+            status=data.get("status")
         )
         s = self.session()
 
@@ -81,25 +68,13 @@ class ViolasPGHandler():
         transactions = []
         for i in data:
             tran = ViolasTransaction(
+                version = i.get("version"),
                 sequence_number = i.get("sequence_number"),
                 sender = i.get("sender").lower(),
                 receiver = i.get("receiver").lower() if i.get("receiver") is not None else None,
                 currency = i.get("currency"),
-                gas_currency = i.get("gas_currency"),
-                amount = i.get("amount"),
-                gas_used = i.get("gas_used"),
-                gas_unit_price = i.get("gas_unit_price"),
-                max_gas_amount = i.get("max_gas_amount"),
-                expiration_time = i.get("expiration_time"),
                 transaction_type = i.get("transaction_type"),
-                data = i.get("data"),
-                public_key = i.get("public_key"),
-                script_hash = i.get("script_hash"),
-                signature = i.get("signature"),
-                signature_scheme = i.get("signature_scheme"),
-                status = i.get("status"),
-                event = i.get("event"),
-                confirmed_time = i.get("confirmed_time")
+                status = i.get("status")
             )
 
             transactions.append(tran)
@@ -134,7 +109,6 @@ class ViolasPGHandler():
         if result is None:
             info = ViolasAddressInfo(
                 address = data["sender"].lower(),
-                type = data["address_type"],
                 first_seen = data["version"],
                 sent_amount = sent_amount,
                 sent_tx_count = 1,
@@ -182,7 +156,6 @@ class ViolasPGHandler():
         if result is None:
             info = ViolasAddressInfo(
                 address = data["receiver"].lower(),
-                type = data["address_type"],
                 first_seen = data["version"],
                 received_amount = received_amount,
                 received_tx_count = 1,
@@ -205,23 +178,6 @@ class ViolasPGHandler():
 
         return
 
-    def GetTransactionCount(self):
-        s = self.session()
-
-        try:
-            result = s.query(ViolasTransaction.id).order_by(ViolasTransaction.id.desc()).limit(1).first()
-            s.close()
-
-            if result is None:
-                result = 0
-            else:
-                result = result[0]
-
-            return True, result
-        except OperationalError:
-            s.close()
-            return False, None
-
     def InsertIncentives(self, infos):
         s = self.session()
 
@@ -240,3 +196,18 @@ class ViolasPGHandler():
         self.Commit(s)
 
         return True
+
+    def GetLastTransactionVersion(self):
+        s = self.session()
+
+        try:
+            result = s.query(ViolasTransaction.version).order_by(ViolasTransaction.version.desc()).first()
+
+            if result is None:
+                return True, 0
+            else:
+                return True, result[0]
+        except OperationalError:
+            return False, None
+        finally:
+            s.close()
