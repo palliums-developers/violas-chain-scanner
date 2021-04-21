@@ -113,7 +113,13 @@ while True:
                     "http://127.0.0.1:4006/violas/push/message",
                     json = {
                         "service": "violas_01",
-                        "version":data["version"]
+                        "version":data["version"],
+                        "sender": data["sender"],
+                        "receiver": data["receiver"],
+                        "amount": txInfo.get_amount(),
+                        "currency": data["currency"],
+                        "type": data["transaction_type"],
+                        "status": data["status"]
                     }
                 )
             except Exception as e:
